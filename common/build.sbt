@@ -15,7 +15,8 @@ libraryDependencies ++= Seq(
   "io.monix" %% "monix" % "2.0.4",
   "io.monix" %% "monix-cats" % "2.0.4",
   "io.spray" %% "spray-json" % "1.3.2",
-  "com.github.fommil" %% "spray-json-shapeless" % "1.2.0"
+  "com.github.fommil" %% "spray-json-shapeless" % "1.2.0",
+  "io.netty" % "netty-all" % "4.1.5.Final"
 )
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
