@@ -1,8 +1,8 @@
 package org.lolhens.satip.rtcp
 
-import akka.util.ByteString
+import java.nio.ByteOrder
 
-import scala.collection.immutable.IntMap
+import akka.util.ByteString
 import org.lolhens.satip.RichByteString._
 
 /**
@@ -21,7 +21,7 @@ class ReportBlock(val synchronizationSource: String,
 object ReportBlock {
   val length = 24
 
-  def fromByteString(byteString: ByteString): ReportBlock =
+  def fromByteString(byteString: ByteString)(implicit byteOrder: ByteOrder): ReportBlock =
     new ReportBlock(
       synchronizationSource = byteString.take(4).mkString,
       fractionLost = byteString(4).toInt,
