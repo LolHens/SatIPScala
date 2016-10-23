@@ -59,7 +59,6 @@ gradle-app.setting
 
 ### Eclipse ###
 .metadata
-bin/
 tmp/
 *.tmp
 *.bak
