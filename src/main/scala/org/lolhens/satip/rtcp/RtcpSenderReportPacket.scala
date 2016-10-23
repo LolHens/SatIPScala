@@ -3,7 +3,7 @@ package org.lolhens.satip.rtcp
 import java.nio.ByteOrder
 
 import akka.util.ByteString
-import org.lolhens.satip.RichByteString._
+import org.lolhens.satip.util.RichByteString._
 
 /**
   * Created by pierr on 23.10.2016.

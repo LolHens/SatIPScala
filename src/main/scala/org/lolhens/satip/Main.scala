@@ -3,7 +3,7 @@ package org.lolhens.satip
 import java.nio.ByteOrder
 
 import akka.util.{ByteString, ByteStringBuilder}
-import org.lolhens.satip.RichByteString._
+import org.lolhens.satip.util.RichByteString._
 
 /**
   * Created by pierr on 22.10.2016.

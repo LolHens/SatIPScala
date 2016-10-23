@@ -1,10 +1,9 @@
-package org.lolhens.satip
+package org.lolhens.satip.util
 
 import java.nio.ByteOrder
 
 import akka.util.ByteString
-import org.lolhens.satip.RichByteString._
-
+import RichByteString._
 import scala.language.implicitConversions
 
 /**

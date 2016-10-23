@@ -12,8 +12,8 @@ lazy val settings = Seq(
     "org.slf4j" % "slf4j-api" % "1.7.21",
     "ch.qos.logback" % "logback-classic" % "1.1.7",
     "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0",
-    "org.typelevel" %% "cats" % "0.7.2",
     "com.github.mpilquist" %% "simulacrum" % "0.10.0",
+    "org.typelevel" %% "cats" % "0.7.2",
     "com.chuusai" %% "shapeless" % "2.3.2",
     "io.monix" %% "monix" % "2.0.4",
     "io.monix" %% "monix-cats" % "2.0.4",
@@ -23,7 +23,8 @@ lazy val settings = Seq(
     "com.typesafe.akka" %% "akka-http-experimental" % "2.4.11",
     "io.spray" %% "spray-json" % "1.3.2",
     "com.github.fommil" %% "spray-json-shapeless" % "1.2.0",
-    "org.fourthline.cling" % "cling-core" % "2.1.2-SNAPSHOT"
+    "com.lihaoyi" %% "fastparse" % "0.4.1"
+    //"org.fourthline.cling" % "cling-core" % "2.1.2-SNAPSHOT"
   ),
 
   addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full),

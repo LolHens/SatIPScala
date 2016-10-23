@@ -53,9 +53,7 @@ object RtspStatusCode {
     optionNotSupported
   )
 
-  private lazy val valuesMap = values.map(e => (e.code, e)).toMap
-
-  def apply(code: Int) = valuesMap.get(code)
+  lazy val valuesMap: Map[Int, RtspStatusCode] = values.map(e => (e.code, e)).toMap
 
   val continue = RtspStatusCode(100)
   val ok = RtspStatusCode(200)

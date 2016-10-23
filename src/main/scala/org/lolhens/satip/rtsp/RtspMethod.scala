@@ -20,9 +20,7 @@ object RtspMethod {
     teardown
   )
 
-  private lazy val valuesMap = values.map(e => (e.name, e)).toMap
-
-  def apply(name: String) = valuesMap.get(name)
+  lazy val valuesMap: Map[String, RtspMethod] = values.map(e => (e.name, e)).toMap
 
   val describe = RtspMethod("DESCRIBE")
   val announce = RtspMethod("ANNOUNCE")
