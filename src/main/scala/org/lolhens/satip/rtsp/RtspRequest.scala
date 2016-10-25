@@ -12,7 +12,7 @@ case class RtspRequest(method: RtspMethod,
                        majorVersion: Int,
                        minorVersion: Int,
                        headers: Map[String, String],
-                       body: String) {
+                       body: String = "") {
   def toByteString: ByteString = {
     val request = s"$method $uri $majorVersion $minorVersion\r\n${
       headers.map(e => s"${e._1}: ${e._2}\r\n").mkString

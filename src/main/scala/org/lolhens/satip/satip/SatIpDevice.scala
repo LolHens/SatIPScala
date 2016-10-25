@@ -1,8 +1,13 @@
 package org.lolhens.satip.satip
 
 import org.fourthline.cling.model.meta.RemoteDevice
-import org.lolhens.satip.rtsp.{RtspMethod, RtspRequest}
+import org.lolhens.satip.rtsp.{RtspClient, RtspMethod, RtspRequest, RtspStatusCode}
 import org.lolhens.satip.satip.SatIpDevice.Tuner
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+import fastparse.all._
+import org.lolhens.satip.util.ParserUtils._
 
 /**
   * Created by pierr on 23.10.2016.
@@ -15,6 +20,8 @@ class SatIpDevice(val baseUrl: String,
                   val hasSatteliteBroadcastSupport: Boolean,
                   val hasCableBroadcastSupport: Boolean,
                   val hasTerrestrialBroadcastSupport: Boolean) {
+  val responseBodyParser = P(("s=SatIPServer:1" ~ s1 ~ (!space ~ AnyChar).rep(min = 1).! ~ s1).?)
+
   def checkCapabilities(capabilities: String): Unit = {
     val tunerCount: Map[Tuner, Int] =
       capabilities
@@ -24,7 +31,24 @@ class SatIpDevice(val baseUrl: String,
         .groupBy(e => e)
         .map(e => (e._1, e._2.length)) match {
         case Map.empty =>
-          RtspRequest(RtspMethod.describe, s"rtsp://$baseUrl/", 1, 0)
+          val request = RtspRequest(RtspMethod.describe, s"rtsp://$baseUrl/", 1, 0, Map(
+            "Accept" -> "application/sdp",
+            "Connection" -> "close"
+          ))
+
+          val client = new RtspClient(baseUrl)
+          val responseFuture = client.request(request)
+
+          Await.result(responseFuture.map {response =>
+            if (response.statusCode == RtspStatusCode.ok) {
+              val frontEndInfo = responseBodyParser.parse(response.body).tried.toOption.flatten
+              frontEndInfo.map {frontEndInfo =>
+                val frontEndCounts = frontEndInfo.split(",")
+
+              }
+            }
+          }, Duration.Inf)
+          ()
       }
 
 
@@ -33,7 +57,7 @@ class SatIpDevice(val baseUrl: String,
 
 object SatIpDevice {
   def fromUPnPDevice(device: RemoteDevice) = {
-    ???
+    device.getDetails.getBaseURL
   }
 
   case class Tuner(name: String)
