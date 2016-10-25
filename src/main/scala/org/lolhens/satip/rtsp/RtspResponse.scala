@@ -20,7 +20,7 @@ object RtspResponse {
   private val responseParser =
     P((Start ~ "RTSP/" ~
       digits.!.map(Integer.parseInt) ~ "." ~ digits.!.map(Integer.parseInt) ~ s1 ~
-      digits.!.map((Integer.parseInt(_)) andThen (RtspStatusCode(_))) ~ s1 ~
+      digits.!.map((Integer.parseInt(_: String)) andThen (RtspStatusCode(_))) ~ s1 ~
       (!"." ~ AnyChar).rep(min = 1).?.! ~ "\r\n" ~
       ((!":" ~ AnyChar).rep.! ~ ":" ~ (!"\r\n" ~ AnyChar).rep.!.map(_.trim)).rep(sep = !"\r\n\r\n" ~ "\r\n").map(_.toMap) ~ "\r\n\r\n" ~
       AnyChar.rep.! ~ End)

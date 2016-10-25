@@ -5,7 +5,7 @@ import org.fourthline.cling.model.meta.RemoteDevice
 import org.lolhens.satip.rtsp.{RtspClient, RtspMethod, RtspRequest, RtspStatusCode}
 import org.lolhens.satip.satip.SatIpDevice.Tuner
 import org.lolhens.satip.util.ParserUtils._
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
@@ -30,7 +30,7 @@ class SatIpDevice(val baseUrl: String,
         .flatMap(Tuner.valueMap.get)
         .groupBy(e => e)
         .map(e => (e._1, e._2.length)) match {
-        case Map.empty =>
+        case empty if empty.isEmpty =>
           val request = RtspRequest(RtspMethod.describe, s"rtsp://$baseUrl/", 1, 0, Map(
             "Accept" -> "application/sdp",
             "Connection" -> "close"
@@ -65,7 +65,7 @@ class SatIpDevice(val baseUrl: String,
                 ???
             }
           }, Duration.Inf)
-          ()
+          ???
       }
 
 
@@ -80,16 +80,16 @@ object SatIpDevice {
   case class Tuner(name: String)
 
   object Tuner {
-    val values = List(dvbs, dvbs2, dvbt, dvbt2, dvbc, dvbc2)
-
-    lazy val valueMap = values.map(e => (e.name, e)).toMap
-
     val dvbs = Tuner("dvbs")
     val dvbs2 = Tuner("dvbs2")
     val dvbt = Tuner("dvbt")
     val dvbt2 = Tuner("dvbt2")
     val dvbc = Tuner("dvbc")
     val dvbc2 = Tuner("dvbc2")
+
+    val values = List(dvbs, dvbs2, dvbt, dvbt2, dvbc, dvbc2)
+
+    lazy val valueMap = values.map(e => (e.name, e)).toMap
   }
 
 }

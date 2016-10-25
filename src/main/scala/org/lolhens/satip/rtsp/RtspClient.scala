@@ -1,10 +1,11 @@
 package org.lolhens.satip.rtsp
 
 import java.net.Socket
+import java.nio.ByteOrder
 import java.util.concurrent.locks.ReentrantLock
 
 import akka.util.ByteStringBuilder
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
@@ -45,6 +46,7 @@ class RtspClient(val serverHost: String) {
       client.getInputStream.available() > 0
     }) ()
 
+    implicit val byteOrder = ByteOrder.BIG_ENDIAN
     val response = RtspResponse.fromByteString(builder.result())
 
     // TODO: maybe read full body
