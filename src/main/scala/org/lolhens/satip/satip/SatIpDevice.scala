@@ -1,13 +1,13 @@
 package org.lolhens.satip.satip
 
+import fastparse.all._
 import org.fourthline.cling.model.meta.RemoteDevice
 import org.lolhens.satip.rtsp.{RtspClient, RtspMethod, RtspRequest, RtspStatusCode}
 import org.lolhens.satip.satip.SatIpDevice.Tuner
+import org.lolhens.satip.util.ParserUtils._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-import fastparse.all._
-import org.lolhens.satip.util.ParserUtils._
 
 /**
   * Created by pierr on 23.10.2016.
@@ -39,13 +39,30 @@ class SatIpDevice(val baseUrl: String,
           val client = new RtspClient(baseUrl)
           val responseFuture = client.request(request)
 
-          Await.result(responseFuture.map {response =>
-            if (response.statusCode == RtspStatusCode.ok) {
-              val frontEndInfo = responseBodyParser.parse(response.body).tried.toOption.flatten
-              frontEndInfo.map {frontEndInfo =>
-                val frontEndCounts = frontEndInfo.split(",")
+          Await.result(responseFuture.map { response =>
+            response.statusCode match {
+              case RtspStatusCode.ok =>
+                val frontEndInfo = responseBodyParser.parse(response.body).tried.toOption.flatten
+                frontEndInfo.map {
+                  frontEndInfo =>
+                    val frontEndCounts = frontEndInfo.split(",")
+                    val tunerCounts2 =
+                      List("dvbs2", "dvbt", "dvbc")
+                        .zip(
+                          frontEndCounts
+                            .take(3)
+                            .map(((_: String).trim) andThen Integer.parseInt)
+                            .padTo(3, 0)
+                        )
 
-              }
+                    ???
+                }
+
+              case RtspStatusCode.notFound =>
+                // the Sat>Ip server has no active stream
+
+              case _ =>
+                ???
             }
           }, Duration.Inf)
           ()
@@ -74,4 +91,5 @@ object SatIpDevice {
     val dvbc = Tuner("dvbc")
     val dvbc2 = Tuner("dvbc2")
   }
+
 }
