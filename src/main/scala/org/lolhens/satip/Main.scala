@@ -1,9 +1,14 @@
 package org.lolhens.satip
 
+import ch.qos.logback.classic.{Level, Logger}
 import org.fourthline.cling.model.message.header.STAllHeader
 import org.fourthline.cling.model.meta.RemoteDevice
+import org.fourthline.cling.model.types.DeviceType
 import org.fourthline.cling.registry.{DefaultRegistryListener, Registry, RegistryListener}
 import org.fourthline.cling.{UpnpService, UpnpServiceImpl}
+import org.seamless.util.logging.LoggingUtil
+import org.slf4j.LoggerFactory
+import org.slf4j.bridge.SLF4JBridgeHandler
 
 /**
   * Created by pierr on 22.10.2016.
@@ -14,9 +19,14 @@ object Main {
     implicit val byteOrder = ByteOrder.BIG_ENDIAN
     builder.putInt(16734)
     println(builder.result().toInt)*/
+    LoggingUtil.resetRootHandler(new SLF4JBridgeHandler())
 
+    val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).asInstanceOf[Logger]
+    rootLogger.setLevel(Level.INFO)
     testUpnp()
   }
+
+
 
   def testUpnp() = {
     val clientThread = new Thread(new BinaryLightClient())
@@ -53,7 +63,8 @@ object Main {
         //ServiceId serviceId = new UDAServiceId("SwitchPower")
 
         override def remoteDeviceAdded(registry: Registry, device: RemoteDevice): Unit = {
-          println("Service discovered " + device + " - " + device)
+          println(device.findDevices(new DeviceType("ses-com", "SatIPServer", 1)).mkString(" | "))
+          //println("Service discovered " + device + " - " + device.getType + " - " + device.getServices.mkString(", "))
           /*Service switchPower;
           if ((switchPower = device.findService(serviceId)) != null) {
             System.out.println("Service discovered: " + switchPower);
