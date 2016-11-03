@@ -24,7 +24,8 @@ lazy val settings = Seq(
     "com.typesafe.akka" %% "akka-http-experimental" % "2.4.11",
     "io.spray" %% "spray-json" % "1.3.2",
     "com.github.fommil" %% "spray-json-shapeless" % "1.2.0",
-    "com.lihaoyi" %% "fastparse" % "0.4.1"
+    "com.lihaoyi" %% "fastparse" % "0.4.1",
+    "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
     //"org.fourthline.cling" % "cling-core" % "2.1.2-SNAPSHOT"
   ),
 

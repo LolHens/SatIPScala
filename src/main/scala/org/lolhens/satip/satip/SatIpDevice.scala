@@ -22,6 +22,8 @@ class SatIpDevice(val baseUrl: String,
                   val hasTerrestrialBroadcastSupport: Boolean) {
   val responseBodyParser = P(("s=SatIPServer:1" ~ s1 ~ (!space ~ AnyChar).rep(min = 1).! ~ s1).?)
 
+  checkCapabilities("")
+
   def checkCapabilities(capabilities: String): Unit = {
     val tunerCount: Map[Tuner, Int] =
       capabilities
@@ -40,6 +42,7 @@ class SatIpDevice(val baseUrl: String,
           val responseFuture = client.request(request)
 
           Await.result(responseFuture.map { response =>
+            println(response)
             response.statusCode match {
               case RtspStatusCode.ok =>
                 val frontEndInfo = responseBodyParser.parse(response.body).tried.toOption.flatten

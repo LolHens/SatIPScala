@@ -10,6 +10,8 @@ import org.seamless.util.logging.LoggingUtil
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
 
+import scala.xml.XML
+
 /**
   * Created by pierr on 22.10.2016.
   */
@@ -63,7 +65,8 @@ object Main {
         //ServiceId serviceId = new UDAServiceId("SwitchPower")
 
         override def remoteDeviceAdded(registry: Registry, device: RemoteDevice): Unit = {
-          println(device.findDevices(new DeviceType("ses-com", "SatIPServer", 1)).mkString(" | "))
+          val devices = device.findDevices(new DeviceType("ses-com", "SatIPServer", 1))
+          println(devices.map(device => (XML.load(device.getIdentity.getDescriptorURL) \ "device").map(_.namespace).mkString(",")).mkString("\n---\n"))
           //println("Service discovered " + device + " - " + device.getType + " - " + device.getServices.mkString(", "))
           /*Service switchPower;
           if ((switchPower = device.findService(serviceId)) != null) {
