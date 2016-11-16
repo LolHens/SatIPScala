@@ -13,13 +13,13 @@ class RtpListener(val inetSocketAddress: InetSocketAddress,
 
 object RtpListener {
 
-  class TransmissionMode
+  class TransmissionMode(val name: String)
 
   object TransmissionMode {
 
-    object Unicast extends TransmissionMode
+    object Unicast extends TransmissionMode("Unicast")
 
-    object Multicast extends TransmissionMode
+    object Multicast extends TransmissionMode("Multicast")
 
   }
 

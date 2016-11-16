@@ -1,11 +1,14 @@
 package org.lolhens.satip
 
+import java.net.Socket
+
 import ch.qos.logback.classic.{Level, Logger}
 import org.fourthline.cling.model.message.header.STAllHeader
 import org.fourthline.cling.model.meta.RemoteDevice
 import org.fourthline.cling.model.types.DeviceType
 import org.fourthline.cling.registry.{DefaultRegistryListener, Registry, RegistryListener}
 import org.fourthline.cling.{UpnpService, UpnpServiceImpl}
+import org.lolhens.satip.rtsp.{RtspMethod, RtspRequest, RtspSession}
 import org.seamless.util.logging.LoggingUtil
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
@@ -25,7 +28,8 @@ object Main {
 
     val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).asInstanceOf[Logger]
     rootLogger.setLevel(Level.INFO)
-    testUpnp()
+    //testUpnp()
+    RtspSession.test
   }
 
 
@@ -67,6 +71,13 @@ object Main {
         override def remoteDeviceAdded(registry: Registry, device: RemoteDevice): Unit = {
           val devices = device.findDevices(new DeviceType("ses-com", "SatIPServer", 1))
           println(devices.map(device => (XML.load(device.getIdentity.getDescriptorURL) \ "device").map(_.namespace).mkString(",")).mkString("\n---\n"))
+          devices.map { device =>
+            val ip  = device.getIdentity.getDescriptorURL.getHost
+            println(ip)
+
+            println(device.getDetails.getBaseURL)
+            println(device)
+          }
           //println("Service discovered " + device + " - " + device.getType + " - " + device.getServices.mkString(", "))
           /*Service switchPower;
           if ((switchPower = device.findService(serviceId)) != null) {

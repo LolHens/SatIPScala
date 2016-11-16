@@ -25,7 +25,8 @@ lazy val settings = Seq(
     "io.spray" %% "spray-json" % "1.3.2",
     "com.github.fommil" %% "spray-json-shapeless" % "1.2.0",
     "com.lihaoyi" %% "fastparse" % "0.4.1",
-    "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
+    "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
+    "org.scodec" % "scodec-bits_2.11" % "1.1.2"
     //"org.fourthline.cling" % "cling-core" % "2.1.2-SNAPSHOT"
   ),
 
