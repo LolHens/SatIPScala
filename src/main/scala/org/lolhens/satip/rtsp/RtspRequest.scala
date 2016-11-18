@@ -10,9 +10,12 @@ import org.lolhens.satip.rtsp.data.RtspVersion
   */
 case class RtspRequest(method: RtspMethod,
                        uri: String,
-                       headers: Map[String, String],
+                       cSeq: Int,
+                       private val _headers: Map[String, String] = Map.empty,
                        body: String = "")
                       (implicit val version: RtspVersion) {
+  val headers: Map[String, String] = //cseq + headers
+
   def toByteString: ByteString = {
     val request =
       s"$method $uri RTSP/$version\r\n${
