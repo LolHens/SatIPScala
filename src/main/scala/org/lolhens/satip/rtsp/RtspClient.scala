@@ -26,8 +26,8 @@ class RtspClient(val serverHost: String) {
       throw new RuntimeException("Unexpected bytes in buffer!")
 
     val bytes = request
-      .copy(headers =
-        request.headers + ("CSeq" -> cseq.toString))
+      .copy(requestHeaders =
+        request.requestHeaders + RtspHeaderField.CSeq(cseq.toString))(request.version)
       .toByteString
 
     client.getOutputStream.write(bytes.toArray)

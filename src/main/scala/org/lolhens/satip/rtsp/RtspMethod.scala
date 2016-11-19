@@ -32,5 +32,5 @@ object RtspMethod {
     Redirect
   )
 
-  lazy val valuesMap: Map[String, RtspMethod] = values.map(e => (e.name, e)).toMap
+  lazy val valuesMap: Map[String, RtspMethod] = values.map(e => e.name -> e).toMap
 }

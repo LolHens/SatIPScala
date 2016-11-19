@@ -11,16 +11,18 @@ case class RtspHeaderField(name: String, methods: List[RtspMethod]) {
 
 object RtspHeaderField {
 
-  trait RequestField
+  trait RequestField extends RtspHeaderField
 
-  trait ResponseField
+  trait ResponseField extends RtspHeaderField
 
   trait GeneralField extends RequestField with ResponseField
 
-  trait EntityField
+  trait EntityField extends RtspHeaderField
 
   private val all = RtspMethod.values
+
   private def except(methods: List[RtspMethod]) = RtspMethod.values.filterNot(methods.contains)
+
   private val entity = List(Describe, GetParameter)
 
   val Accept = new RtspHeaderField("Accept", entity) with RequestField
@@ -34,14 +36,11 @@ object RtspHeaderField {
   val Conference = new RtspHeaderField("Conference", List(Setup)) with RequestField
   val Connection = new RtspHeaderField("Connection", all) with GeneralField
   val ContentBase = new RtspHeaderField("Content-Base", entity) with EntityField
-  val ContentEncoding = new RtspHeaderField("Content-Encoding", List(SetParameter)) with EntityField
-  val ContentEncoding = new RtspHeaderField("Content-Encoding", List(Describe, Announce)) with EntityField
+  val ContentEncoding = new RtspHeaderField("Content-Encoding", List(SetParameter, Describe, Announce)) with EntityField
   val ContentLanguage = new RtspHeaderField("Content-Language", List(Describe, Announce)) with EntityField
-  val ContentLength = new RtspHeaderField("Content-Length", List(SetParameter, Announce)) with EntityField
-  val ContentLength = new RtspHeaderField("Content-Length", entity) with EntityField
+  val ContentLength = new RtspHeaderField("Content-Length", List(SetParameter, Announce) ++ entity) with EntityField
   val ContentLocation = new RtspHeaderField("Content-Location", entity) with EntityField
-  val ContentType = new RtspHeaderField("Content-Type", List(SetParameter, Announce)) with EntityField
-  val ContentType = new RtspHeaderField("Content-Type", entity) with ResponseField
+  val ContentType = new RtspHeaderField("Content-Type", List(SetParameter, Announce) ++ entity) with EntityField with ResponseField
   val CSeq = new RtspHeaderField("CSeq", all) with GeneralField
   val Date = new RtspHeaderField("Date", all) with GeneralField
   val Expires = new RtspHeaderField("Expires", List(Describe, Announce)) with EntityField
@@ -51,8 +50,7 @@ object RtspHeaderField {
   // val ProxyAuthenticate = new RtspHeaderField("Proxy-Authenticate")
   val ProxyRequire = new RtspHeaderField("Proxy-Require", all) with RequestField
   val Public = new RtspHeaderField("Public", all) with ResponseField
-  val Range = new RtspHeaderField("Range", List(Play, Pause, Record)) with RequestField
-  val Range = new RtspHeaderField("Range", List(Play, Pause, Record)) with ResponseField
+  val Range = new RtspHeaderField("Range", List(Play, Pause, Record)) with RequestField with ResponseField
   val Referer = new RtspHeaderField("Referer", all) with RequestField
   val Require = new RtspHeaderField("Require", all) with RequestField
   val RetryAfter = new RtspHeaderField("Retry-After", all) with ResponseField
@@ -67,47 +65,46 @@ object RtspHeaderField {
   val Via = new RtspHeaderField("Via", all) with GeneralField
   val WWWAuthenticate = new RtspHeaderField("WWW-Authenticate", all) with ResponseField
 
-  /*Accept               R      opt.      entity
-  Accept-Encoding      R      opt.      entity
-  Accept-Language      R      opt.      all
-  Allow                r      opt.      all
-  Authorization        R      opt.      all
-  Bandwidth            R      opt.      all
-  Blocksize            R      opt.      all but OPTIONS, TEARDOWN
-  Cache-Control        g      opt.      SETUP
-  Conference           R      opt.      SETUP
-  Connection           g      req.      all
-  Content-Base         e      opt.      entity
-  Content-Encoding     e      req.      SET_PARAMETER
-  Content-Encoding     e      req.      DESCRIBE, ANNOUNCE
-  Content-Language     e      req.      DESCRIBE, ANNOUNCE
-  Content-Length       e      req.      SET_PARAMETER, ANNOUNCE
-  Content-Length       e      req.      entity
-  Content-Location     e      opt.      entity
-  Content-Type         e      req.      SET_PARAMETER, ANNOUNCE
-  Content-Type         r      req.      entity
-  CSeq                 g      req.      all
-  Date                 g      opt.      all
-  Expires              e      opt.      DESCRIBE, ANNOUNCE
-  From                 R      opt.      all
-  If-Modified-Since    R      opt.      DESCRIBE, SETUP
-  Last-Modified        e      opt.      entity
-  Proxy-Authenticate
-  Proxy-Require        R      req.      all
-  Public               r      opt.      all
-  Range                R      opt.      PLAY, PAUSE, RECORD
-  Range                r      opt.      PLAY, PAUSE, RECORD
-  Referer              R      opt.      all
-  Require              R      req.      all
-  Retry-After          r      opt.      all
-  RTP-Info             r      req.      PLAY
-  Scale                Rr     opt.      PLAY, RECORD
-  Session              Rr     req.      all but SETUP, OPTIONS
-  Server               r      opt.      all
-  Speed                Rr     opt.      PLAY
-  Transport            Rr     req.      SETUP
-  Unsupported          r      req.      all
-  User-Agent           R      opt.      all
-  Via                  g      opt.      all
-  WWW-Authenticate     r      opt.      all*/
+  val values: List[RtspHeaderField] = List(
+    Accept,
+    AcceptEncoding,
+    AcceptLanguage,
+    Allow,
+    Authorization,
+    Bandwidth,
+    Blocksize,
+    CacheControl,
+    Conference,
+    Connection,
+    ContentBase,
+    ContentEncoding,
+    ContentLanguage,
+    ContentLength,
+    ContentLocation,
+    ContentType,
+    CSeq,
+    Date,
+    Expires,
+    From,
+    IfModifiedSince,
+    LastModified,
+    ProxyRequire,
+    Public,
+    Range,
+    Referer,
+    Require,
+    RetryAfter,
+    RTPInfo,
+    Scale,
+    Session,
+    Server,
+    Speed,
+    Transport,
+    Unsupported,
+    UserAgent,
+    Via,
+    WWWAuthenticate
+  )
+
+  lazy val valuesMap: Map[String, RtspHeaderField] = values.map(e => e.name -> e).toMap
 }

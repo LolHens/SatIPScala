@@ -4,17 +4,17 @@ import java.nio.ByteOrder
 
 import akka.util.ByteString
 import fastparse.all._
+import org.lolhens.satip.rtsp.data.RtspVersion
 import org.lolhens.satip.util.ParserUtils._
 
 /**
   * Created by pierr on 23.10.2016.
   */
-case class RtspResponse(majorVersion: Int = 1,
-                        minorVersion: Int,
+case class RtspResponse(rtspVersion: RtspVersion,
                         statusCode: RtspStatusCode,
                         reasonPhrase: String,
-                        headers: Map[String, String],
-                        body: String)
+                        responseHeaders: Map[RtspHeaderField.ResponseField, String],
+                        entity: Option[RtspEntity])
 
 object RtspResponse {
   private val responseParser =
@@ -26,7 +26,19 @@ object RtspResponse {
       AnyChar.rep.! ~ End)
       .map {
         case (majorVersion, minorVersion, statusCode, reasonPhrase, headers, body) =>
-          RtspResponse(majorVersion, minorVersion, statusCode, reasonPhrase, headers, body)
+          RtspResponse(
+            RtspVersion(majorVersion, minorVersion), statusCode, reasonPhrase,
+            headers
+              .map(header => RtspHeaderField.valuesMap.get(header._1) -> header._2)
+              .collect {
+                case (Some(responseHeader: RtspHeaderField.ResponseField), value: String) => responseHeader -> value
+              },
+            Some(RtspEntity(headers
+              .map(header => RtspHeaderField.valuesMap.get(header._1) -> header._2)
+              .collect {
+                case (Some(entityHeader: RtspHeaderField.EntityField), value: String) => entityHeader -> value
+              }, body)).filterNot(_.isEmpty)
+          )
       })
 
   def fromByteString(byteString: ByteString)(implicit byteOrder: ByteOrder): RtspResponse = {

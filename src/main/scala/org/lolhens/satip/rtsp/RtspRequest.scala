@@ -10,11 +10,12 @@ import org.lolhens.satip.rtsp.data.RtspVersion
   */
 case class RtspRequest(method: RtspMethod,
                        uri: String,
-                       cSeq: Int,
-                       private val _headers: Map[String, String] = Map.empty,
-                       body: String = "")
+                       requestHeaders: Map[RtspHeaderField.RequestField, String] = Map.empty,
+                       entity: Option[RtspEntity] = None)
                       (implicit val version: RtspVersion) {
-  val headers: Map[String, String] = //cseq + headers
+  private def headers = requestHeaders ++ entity.map(_.entityHeaders).getOrElse(Map.empty)
+
+  private def body = entity.map(_.body).getOrElse("")
 
   def toByteString: ByteString = {
     val request =
@@ -27,27 +28,36 @@ case class RtspRequest(method: RtspMethod,
 }
 
 object RtspRequest {
+  def options(uri: String, cSeq: Int, requestHeaders: Map[RtspHeaderField.RequestField, String] = Map.empty)(implicit version: RtspVersion): RtspRequest =
+    RtspRequest(RtspMethod.Options, uri, Map(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
 
+  def describe(uri: String, cSeq: Int, requestHeaders: Map[RtspHeaderField.RequestField, String] = Map.empty, entity: RtspEntity)(implicit version: RtspVersion): RtspRequest =
+    RtspRequest(RtspMethod.Options, uri, Map(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders, Some(entity))
 
-  def options()(implicit version: RtspVersion): RtspRequest = ???
+  def setup(uri: String, cSeq: Int, requestHeaders: Map[RtspHeaderField.RequestField, String] = Map.empty)(implicit version: RtspVersion): RtspRequest =
+    RtspRequest(RtspMethod.Options, uri, Map(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
 
-  def describe()(implicit version: RtspVersion): RtspRequest = ???
+  def play(uri: String, cSeq: Int, requestHeaders: Map[RtspHeaderField.RequestField, String] = Map.empty)(implicit version: RtspVersion): RtspRequest =
+    RtspRequest(RtspMethod.Options, uri, Map(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
 
-  def setup()(implicit version: RtspVersion): RtspRequest = ???
+  def pause(uri: String, cSeq: Int, requestHeaders: Map[RtspHeaderField.RequestField, String] = Map.empty)(implicit version: RtspVersion): RtspRequest =
+    RtspRequest(RtspMethod.Options, uri, Map(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
 
-  def play()(implicit version: RtspVersion): RtspRequest = ???
+  def record(uri: String, cSeq: Int, requestHeaders: Map[RtspHeaderField.RequestField, String] = Map.empty)(implicit version: RtspVersion): RtspRequest =
+    RtspRequest(RtspMethod.Options, uri, Map(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
 
-  def pause()(implicit version: RtspVersion): RtspRequest = ???
+  def announce(uri: String, cSeq: Int, requestHeaders: Map[RtspHeaderField.RequestField, String] = Map.empty)(implicit version: RtspVersion): RtspRequest =
+    RtspRequest(RtspMethod.Options, uri, Map(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
 
-  def record()(implicit version: RtspVersion): RtspRequest = ???
+  def teardown(uri: String, cSeq: Int, requestHeaders: Map[RtspHeaderField.RequestField, String] = Map.empty)(implicit version: RtspVersion): RtspRequest =
+    RtspRequest(RtspMethod.Options, uri, Map(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
 
-  def announce()(implicit version: RtspVersion): RtspRequest = ???
+  def getParameter(uri: String, cSeq: Int, requestHeaders: Map[RtspHeaderField.RequestField, String] = Map.empty, entity: RtspEntity)(implicit version: RtspVersion): RtspRequest =
+    RtspRequest(RtspMethod.Options, uri, Map(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders, Some(entity))
 
-  def teardown()(implicit version: RtspVersion): RtspRequest = ???
+  def setParameter(uri: String, cSeq: Int, requestHeaders: Map[RtspHeaderField.RequestField, String] = Map.empty)(implicit version: RtspVersion): RtspRequest =
+    RtspRequest(RtspMethod.Options, uri, Map(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
 
-  def getParameter()(implicit version: RtspVersion): RtspRequest = ???
-
-  def setParameter()(implicit version: RtspVersion): RtspRequest = ???
-
-  def redirect()(implicit version: RtspVersion): RtspRequest = ???
+  def redirect(uri: String, cSeq: Int, requestHeaders: Map[RtspHeaderField.RequestField, String] = Map.empty)(implicit version: RtspVersion): RtspRequest =
+    RtspRequest(RtspMethod.Options, uri, Map(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
 }

@@ -6,6 +6,7 @@ import java.nio.ByteOrder
 import akka.util.ByteString
 import org.lolhens.satip.rtp.RtpListener.TransmissionMode
 import org.lolhens.satip.rtp.RtpListener.TransmissionMode.{Multicast, Unicast}
+import org.lolhens.satip.rtsp.data.RtspVersion
 
 /**
   * Created by pierr on 23.10.2016.
@@ -36,9 +37,11 @@ class RtspSession(val rtspDevice: RtspDevice,
     _closed = true
   }
 
+  private implicit val rtspVersion = RtspVersion(1, 0)
+
   def sendRequest(request: RtspRequest) = {
     if (rtspSocket == null) connect()
-    val newRequest = request.copy(headers = request.headers + ("CSeq" -> rtspSequenceNum.toString))
+    val newRequest = request.copy(requestHeaders = request.requestHeaders + RtspHeaderField.CSeq(rtspSequenceNum.toString))
     rtspSequenceNum += 1
     val bytes = newRequest.toByteString
     if (rtspSocket != null) {
@@ -57,7 +60,7 @@ class RtspSession(val rtspDevice: RtspDevice,
     val readBytes = rtspSocket.getInputStream.read(bytes)
     implicit val byteOrder = ByteOrder.BIG_ENDIAN
     val response = RtspResponse.fromByteString(ByteString.fromArray(bytes, 0, readBytes))
-    val contentLength = response.headers.get("Content-Length").map(_.toInt)
+    val contentLength = response.entity.flatMap(_.entityHeaders.get(RtspHeaderField.ContentLength)).map(_.toInt)
     println(contentLength)
     contentLength.map { length =>
       val bytes = new Array[Byte](length)
@@ -72,15 +75,16 @@ class RtspSession(val rtspDevice: RtspDevice,
 
   def setup(query: String, transmissionMode: TransmissionMode) = {
     //: RtspStatusCode = {
-    val headers = transmissionMode match {
+    val headers: Map[RtspHeaderField.RequestField, String] = transmissionMode match {
       case Multicast =>
-        Map("Transport" -> s"RTP/AVP;${transmissionMode.name.toLowerCase}")
+        Map(RtspHeaderField.Transport(s"RTP/AVP;${transmissionMode.name.toLowerCase}"))
       case Unicast =>
         def find2FreeTcpPorts: (Int, Int) = (5555, 5556)
         val (clientRtpPort, clientRtcpPort) = find2FreeTcpPorts
-        Map("Transport" -> s"RTP/AVP;${transmissionMode.name.toLowerCase};client_port=$clientRtpPort-$clientRtcpPort")
+        Map(RtspHeaderField.Transport(s"RTP/AVP;${transmissionMode.name.toLowerCase};client_port=$clientRtpPort-$clientRtcpPort"))
     }
-    val request: RtspRequest = RtspRequest(RtspMethod.setup, s"rtsp://${rtspDevice.serverAddress}:${554}/?$query", 1, 0, headers)
+
+    val request: RtspRequest = RtspRequest.setup(s"rtsp://${rtspDevice.serverAddress}:${554}/?$query", 0/*CSeq*/, headers)
     sendRequest(request)
     receiveResponse
     //val response: RtspResponse = ???
@@ -94,10 +98,10 @@ class RtspSession(val rtspDevice: RtspDevice,
 
   def describe() = {
     rtspSocket = new Socket("192.168.1.5", 554)
-    val request = RtspRequest(RtspMethod.describe, s"rtsp://192.168.1.5:554/stream=0", 1, 0, Map(
-      "Accept" -> "application/sdp",
-      "Session" -> "0"
-    ))
+    val request = RtspRequest.describe(s"rtsp://192.168.1.5:554/stream=0", 0, Map(
+      RtspHeaderField.Accept("application/sdp"),
+      RtspHeaderField.Session("0")
+    ), RtspEntity(Map.empty, ""))
     sendRequest(request)
     receiveResponse
   }
