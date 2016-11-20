@@ -6,7 +6,11 @@ import org.lolhens.satip.rtsp.RtspMethod._
   * Created by pierr on 13.11.2016.
   */
 case class RtspHeaderField(name: String, methods: List[RtspMethod]) {
-  def apply(value: String): (this.type, String) = this -> value
+  case class Value(value: String) {
+    val headerField = RtspHeaderField.this
+  }
+
+  def apply(value: String): Value = Value(value)
 }
 
 object RtspHeaderField {

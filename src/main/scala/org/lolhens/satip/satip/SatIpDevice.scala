@@ -2,9 +2,11 @@ package org.lolhens.satip.satip
 
 import fastparse.all._
 import org.fourthline.cling.model.meta.RemoteDevice
-import org.lolhens.satip.rtsp.{RtspClient, RtspMethod, RtspRequest, RtspStatusCode}
+import org.lolhens.satip.rtsp._
+import org.lolhens.satip.rtsp.data.RtspVersion
 import org.lolhens.satip.satip.SatIpDevice.Tuner
 import org.lolhens.satip.util.ParserUtils._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -25,6 +27,7 @@ class SatIpDevice(val baseUrl: String,
   checkCapabilities("")
 
   def checkCapabilities(capabilities: String): Unit = {
+    implicit val rtspVersion = RtspVersion(1, 0)
     val tunerCount: Map[Tuner, Int] =
       capabilities
         .split(",")
@@ -33,10 +36,10 @@ class SatIpDevice(val baseUrl: String,
         .groupBy(e => e)
         .map(e => (e._1, e._2.length)) match {
         case empty if empty.isEmpty =>
-          val request = RtspRequest(RtspMethod.describe, s"rtsp://$baseUrl/", 1, 0, Map(
-            "Accept" -> "application/sdp",
-            "Connection" -> "close"
-          ))
+          val request = RtspRequest.describe( s"rtsp://$baseUrl/", 0, List(
+            RtspHeaderField.Accept("application/sdp"),
+            RtspHeaderField.Connection("close")
+          ), RtspEntity(Nil, ""))
 
           val client = new RtspClient(baseUrl)
           val responseFuture = client.request(request)
@@ -45,7 +48,7 @@ class SatIpDevice(val baseUrl: String,
             println(response)
             response.statusCode match {
               case RtspStatusCode.ok =>
-                val frontEndInfo = responseBodyParser.parse(response.body).tried.toOption.flatten
+                val frontEndInfo = response.entity.map(_.body).flatMap(body => responseBodyParser.parse(body).tried.toOption.flatten)
                 frontEndInfo.map {
                   frontEndInfo =>
                     val frontEndCounts = frontEndInfo.split(",")
