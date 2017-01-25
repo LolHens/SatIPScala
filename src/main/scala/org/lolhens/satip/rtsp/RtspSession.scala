@@ -125,11 +125,13 @@ object RtspSession {
 
   val defaultRtspSessionTTL = 30 // seconds
 
-  val rtspSessionHeaderParser = P(s ~ (!(space | ";")).rep(min = 1).! ~ (";timeout=" ~ digits.!.map(_.toInt)).?).map {
+  val rtspSessionHeaderParser: Parser[(String, Int)] =
+    P(s ~ (!(space | ";")).rep(min = 1).! ~ (";timeout=" ~ digits.!.map(_.toInt)).?).map {
     case (rtspSessionId, rtspSessionTTL) => (rtspSessionId, rtspSessionTTL.getOrElse(defaultRtspSessionTTL))
   }
 
-  val describeResponseSignalInfo = P(";tuner=" ~ digits ~ "," ~ digits.!.map(_.toInt) ~ "," ~ digits.!.map(_.toInt) ~ "," ~ digits.!.map(_.toInt) ~ ",").map {
+  val describeResponseSignalInfo: Parser[(Boolean, Double, Double)] =
+    P(";tuner=" ~ digits ~ "," ~ digits.!.map(_.toInt) ~ "," ~ digits.!.map(_.toInt) ~ "," ~ digits.!.map(_.toInt) ~ ",").map {
     case (level, signalLocked, quality) =>
       (signalLocked == 1, level.toDouble * 100 / 255, quality.toDouble * 100 / 255)
   }
