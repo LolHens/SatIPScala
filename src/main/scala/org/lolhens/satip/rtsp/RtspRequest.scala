@@ -22,6 +22,7 @@ case class RtspRequest(method: RtspMethod,
       s"$method $uri RTSP/$version\r\n${
         headers.map(e => s"${e.headerField.name}: ${e.value}\r\n").mkString
       }\r\n$body"
+    //println(request)
 
     ByteString.fromString(request, StandardCharsets.UTF_8.name())
   }

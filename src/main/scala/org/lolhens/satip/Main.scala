@@ -76,7 +76,11 @@ object Main {
             println(ip)
 
             println(device.getDetails.getBaseURL)
+            println(device.getDetails.getFriendlyName)
+            //println(device.getDetails.get)
+            println(device.getIdentity.getUdn)
             println(device)
+            println("test")
           }
           //println("Service discovered " + device + " - " + device.getType + " - " + device.getServices.mkString(", "))
           /*Service switchPower;
