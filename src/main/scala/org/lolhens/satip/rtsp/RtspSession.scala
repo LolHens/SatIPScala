@@ -110,7 +110,7 @@ class RtspSession(val rtspDevice: RtspDevice,
 
 object RtspSession {
   def test = {
-    val session = new RtspSession(new RtspDevice("192.168.1.5", "", "", null), "",
+    val session = new RtspSession(new RtspDevice("192.168.14.251", "", "", null), "",
       0,
       "",
       0, 0, 0, 0, 0, 0,
