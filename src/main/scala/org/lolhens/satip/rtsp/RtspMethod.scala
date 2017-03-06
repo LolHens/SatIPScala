@@ -3,7 +3,9 @@ package org.lolhens.satip.rtsp
 /**
   * Created by pierr on 23.10.2016.
   */
-case class RtspMethod(name: String)
+case class RtspMethod(name: String) {
+  override def toString: String = name
+}
 
 object RtspMethod {
   val Options = RtspMethod("OPTIONS")
