@@ -17,15 +17,13 @@ case class RtspRequest(method: RtspMethod,
 
   private def body = entity.map(_.body).getOrElse("")
 
-  def toByteString: ByteString = {
-    val request =
-      s"$method $uri RTSP/$version\r\n${
-        headers.map(e => s"${e.headerField.name}: ${e.value}\r\n").mkString
-      }\r\n$body"
-    //println(request)
+  def request: String =
+    s"$method $uri RTSP/$version\r\n${
+      headers.map(e => s"${e.headerField.name}: ${e.value}\r\n").mkString
+    }\r\n$body"
 
+  def toByteString: ByteString =
     ByteString.fromString(request, StandardCharsets.UTF_8.name())
-  }
 }
 
 object RtspRequest {
@@ -36,7 +34,7 @@ object RtspRequest {
     RtspRequest(RtspMethod.Options, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders, Some(entity))
 
   def setup(uri: String, cSeq: Int, requestHeaders: List[RtspHeaderField.RequestField#Value] = Nil)(implicit version: RtspVersion): RtspRequest =
-    RtspRequest(RtspMethod.Options, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
+    RtspRequest(RtspMethod.Setup, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
 
   def play(uri: String, cSeq: Int, requestHeaders: List[RtspHeaderField.RequestField#Value] = Nil)(implicit version: RtspVersion): RtspRequest =
     RtspRequest(RtspMethod.Options, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)

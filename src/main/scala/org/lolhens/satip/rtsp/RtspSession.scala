@@ -110,12 +110,15 @@ class RtspSession(val rtspDevice: RtspDevice,
 
 object RtspSession {
   def test = {
-    val session = new RtspSession(new RtspDevice("192.168.14.251", "uuid:00000000-0000-1000-8f62-00059e979f48", "Triax SatIP Converter", null), "",
+    val device = new RtspDevice("192.168.14.251", "uuid:00000000-0000-1000-8f62-00059e979f48", "Triax SatIP Converter")
+
+    val session = new RtspSession(device, "",
       0,
       "",
       0, 0, 0, 0, 0, 0,
       "", "", "",
       "", 0, 0)
+
     session.setup("fe=1&src=1&msys=dvbs&freq=12545&pol=h&sr=22000&fec=56&mtype=qpsk&pids=0", TransmissionMode.Unicast)
     //session.describe()
   }
