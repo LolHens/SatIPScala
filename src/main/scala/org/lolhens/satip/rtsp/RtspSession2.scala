@@ -12,24 +12,25 @@ import org.lolhens.satip.satip.SatIpQuery
 /**
   * Created by pierr on 23.10.2016.
   */
-class RtspSession(val rtspDevice: RtspDevice,
-                  val rtspSessionId: String,
-                  val rtspSessionTTL: Int = 0,
-                  val rtspStreamId: String,
-                  val clientRtpPort: Int,
-                  val clientRtcpPort: Int,
-                  val serverRtpPort: Int,
-                  val serverRtcpPort: Int,
-                  val rtpPort: Int,
-                  val rtcpPort: Int,
-                  val rtspStreamUrl: String,
-                  val destination: String,
-                  val source: String,
-                  val transport: String,
-                  val signalLevel: Int,
-                  val signalQuality: Int,
-                  var rtspSocket: Socket = null,
-                  var rtspSequenceNum: Int = 1) {
+class RtspSession2(val rtspDevice: RtspDevice,
+                   val rtspSessionId: String,
+                   val rtspSessionTTL: Int = 0,
+                   val rtspStreamId: String,
+                   //val rtpSession, rtcpSession
+                   val clientRtpPort: Int,
+                   val clientRtcpPort: Int,
+                   val serverRtpPort: Int,
+                   val serverRtcpPort: Int,
+                   val rtpPort: Int,
+                   val rtcpPort: Int,
+                   val rtspStreamUrl: String,
+                   val destination: String,
+                   val source: String,
+                   val transport: String,
+                   val signalLevel: Int,
+                   val signalQuality: Int,
+                   var rtspSocket: Socket = null,
+                   var rtspSequenceNum: Int = 1) {
   private var _closed = false
 
   def closed = _closed
@@ -110,7 +111,7 @@ class RtspSession(val rtspDevice: RtspDevice,
   }
 }
 
-object RtspSession {
+object RtspSession2 {
   def test = {
     val session = new RtspSession(RtspDevice("192.168.1.5", "uuid:00000000-0000-1000-8f62-00059e979f48", "Triax SatIP Converter"), "",
       0,
