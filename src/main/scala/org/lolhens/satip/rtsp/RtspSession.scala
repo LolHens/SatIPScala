@@ -7,6 +7,7 @@ import akka.util.ByteString
 import org.lolhens.satip.rtp.RtpListener.TransmissionMode
 import org.lolhens.satip.rtp.RtpListener.TransmissionMode.{Multicast, Unicast}
 import org.lolhens.satip.rtsp.data.RtspVersion
+import org.lolhens.satip.satip.SatIpQuery
 
 /**
   * Created by pierr on 23.10.2016.
@@ -81,11 +82,12 @@ class RtspSession(val rtspDevice: RtspDevice,
         List(RtspHeaderField.Transport(s"RTP/AVP;${transmissionMode.name.toLowerCase}"))
       case Unicast =>
         def find2FreeTcpPorts: (Int, Int) = (5555, 5556)
+
         val (clientRtpPort, clientRtcpPort) = find2FreeTcpPorts
         List(RtspHeaderField.Transport(s"RTP/AVP;${transmissionMode.name.toLowerCase};client_port=$clientRtpPort-$clientRtcpPort"))
     }
 
-    val request: RtspRequest = RtspRequest.setup(s"rtsp://${rtspDevice.serverAddress}:${554}/?$query", 1/*CSeq*/, headers)
+    val request: RtspRequest = RtspRequest.setup(s"rtsp://${rtspDevice.serverAddress}:${554}/?$query", 1 /*CSeq*/ , headers)
     sendRequest(request)
     receiveResponse
     //val response: RtspResponse = ???
@@ -116,7 +118,21 @@ object RtspSession {
       0, 0, 0, 0, 0, 0,
       "", "", "",
       "", 0, 0)
-    session.setup("fe=1&src=1&msys=dvbs&freq=12545&pol=h&sr=22000&fec=56&mtype=qpsk&pids=0", TransmissionMode.Unicast)
+
+    import org.lolhens.satip.satip.SatIpQuery.Parameter._
+    val query = SatIpQuery(
+      FrontendIdentifier(1),
+      SignalSource(),
+      ModulationSystem.dvbs,
+      Frequency(12545),
+      Polarisation.HorizontalLinear,
+      SymbolRate(22000),
+      FECInner(56),
+      ModulationType.qpsk,
+      ListPIDs(PID.Num(0))
+    )
+
+    session.setup(query.buildQueryString, TransmissionMode.Unicast)
     //session.describe()
   }
 
