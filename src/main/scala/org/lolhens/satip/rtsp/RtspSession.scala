@@ -79,20 +79,21 @@ class RtspSession(val rtspDevice: RtspDevice,
     //: RtspStatusCode = {
     val headers: List[RtspHeaderField.RequestField#Value] = transmissionMode match {
       case Multicast =>
-        List(RtspHeaderField.Transport(s"RTP/AVP;${transmissionMode.name.toLowerCase}"))
+        List(RtspHeaderField.Transport(s"RTP/AVP;${transmissionMode.name}"))
       case Unicast =>
         def find2FreeTcpPorts: (Int, Int) = (5555, 5556)
 
         val (clientRtpPort, clientRtcpPort) = find2FreeTcpPorts
-        List(RtspHeaderField.Transport(s"RTP/AVP;${transmissionMode.name.toLowerCase};client_port=$clientRtpPort-$clientRtcpPort"))
+        List(RtspHeaderField.Transport(s"RTP/AVP;${transmissionMode.name};client_port=$clientRtpPort-$clientRtcpPort"))
     }
 
-    val request: RtspRequest = RtspRequest.setup(s"rtsp://${rtspDevice.serverAddress}:${554}/?$query", 1 /*CSeq*/ , headers)
+    val request: RtspRequest = RtspRequest.setup(s"rtsp://${rtspDevice.serverAddress}:${554}/?$query", cSeq = 1, headers)
     sendRequest(request)
     receiveResponse
-    //val response: RtspResponse = ???
-    //???
-    //request.
+  }
+
+  def play(query: String, transmissionMode: TransmissionMode) = {
+
   }
 
   def connect() = {
@@ -112,7 +113,7 @@ class RtspSession(val rtspDevice: RtspDevice,
 
 object RtspSession {
   def test = {
-    val session = new RtspSession(RtspDevice("192.168.1.5", "uuid:00000000-0000-1000-8f62-00059e979f48", "Triax SatIP Converter"), "",
+    val session = new RtspSession(RtspDevice("10.1.2.6", "uuid:00000000-0000-1000-8f62-00059e979f48", "Triax SatIP Converter"), "",
       0,
       "",
       0, 0, 0, 0, 0, 0,

@@ -17,9 +17,9 @@ object RtpListener {
 
   object TransmissionMode {
 
-    object Unicast extends TransmissionMode("Unicast")
+    object Unicast extends TransmissionMode("unicast")
 
-    object Multicast extends TransmissionMode("Multicast")
+    object Multicast extends TransmissionMode("multicast")
 
   }
 

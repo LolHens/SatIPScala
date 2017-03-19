@@ -9,9 +9,9 @@ lazy val settings = Seq(
 
   libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % "2.12.1",
-    "org.slf4j" % "slf4j-api" % "1.7.24",
-    "org.slf4j" % "jul-to-slf4j" % "1.7.24",
-    "ch.qos.logback" % "logback-classic" % "1.2.1",
+    "org.slf4j" % "slf4j-api" % "1.7.25",
+    "org.slf4j" % "jul-to-slf4j" % "1.7.25",
+    "ch.qos.logback" % "logback-classic" % "1.2.2",
     "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0",
     "com.github.mpilquist" %% "simulacrum" % "0.10.0",
     "org.typelevel" %% "cats" % "0.9.0",
@@ -21,7 +21,7 @@ lazy val settings = Seq(
     "com.typesafe.akka" %% "akka-actor" % "2.4.17",
     "com.typesafe.akka" %% "akka-remote" % "2.4.17",
     "com.typesafe.akka" %% "akka-stream" % "2.4.17",
-    "com.typesafe.akka" %% "akka-http" % "10.0.4",
+    "com.typesafe.akka" %% "akka-http" % "10.0.5",
     "io.spray" %% "spray-json" % "1.3.3",
     "com.github.fommil" %% "spray-json-shapeless" % "1.3.0",
     "com.lihaoyi" %% "fastparse" % "0.4.2",
