@@ -12,14 +12,14 @@ class RtcpByePacket(val rtcpPacket: RtcpPacket,
                     val reasonForLeaving: Option[String]) {
   override def toString =
     s"""ByeBye.
-        |Version: ${rtcpPacket.version}.
-        |Padding: ${rtcpPacket.padding}.
-        |Report Count: ${rtcpPacket.reportCount}.
-        |Packet Type: ${rtcpPacket.packetType}.
-        |Length: ${rtcpPacket.length}.
-        |SynchronizationSource: ${synchronizationSources.mkString(", ")}.
-        |ReasonForLeaving: ${reasonForLeaving.getOrElse("")}.
-        |.""".stripMargin
+       |Version: ${rtcpPacket.version}.
+       |Padding: ${rtcpPacket.padding}.
+       |Report Count: ${rtcpPacket.reportCount}.
+       |Packet Type: ${rtcpPacket.packetType}.
+       |Length: ${rtcpPacket.length}.
+       |SynchronizationSource: ${synchronizationSources.mkString(", ")}.
+       |ReasonForLeaving: ${reasonForLeaving.getOrElse("")}.
+       |.""".stripMargin
 }
 
 object RtcpByePacket {

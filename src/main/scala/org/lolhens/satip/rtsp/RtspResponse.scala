@@ -18,30 +18,26 @@ case class RtspResponse(rtspVersion: RtspVersion,
 
 object RtspResponse {
   private val responseParser =
-    P((Start ~ "RTSP/" ~
-      digits.!.map(Integer.parseInt) ~ "." ~ digits.!.map(Integer.parseInt) ~ s1 ~
-      digits.!.map((Integer.parseInt(_: String)) andThen (RtspStatusCode(_))) ~ s1 ~
+    (Start ~ "RTSP/" ~ RtspVersion.parser ~ s1 ~ RtspStatusCode.parser ~ s1 ~
       (!("." | "\r\n") ~ AnyChar).rep(min = 1).?.! ~ "\r\n" ~
       ((!":" ~ AnyChar).rep.! ~ ":" ~ (!"\r\n" ~ AnyChar).rep.!.map(_.trim) ~ "\r\n").rep ~ "\r\n" ~
-      AnyChar.rep.! ~ End)
-      .map {
-        case (majorVersion, minorVersion, statusCode, reasonPhrase, headers, body) =>
-          RtspResponse(
-            RtspVersion(majorVersion, minorVersion), statusCode, reasonPhrase,
-            headers
-              .map(header => RtspHeaderField.valuesMap.get(header._1) -> header._2)
-              .collect {
-                case (Some(responseHeader: RtspHeaderField.ResponseField), value: String) => responseHeader(value)
-              }
-              .toList,
-            Some(RtspEntity(headers
-              .map(header => RtspHeaderField.valuesMap.get(header._1) -> header._2)
-              .collect {
-                case (Some(entityHeader: RtspHeaderField.EntityField), value: String) => entityHeader.apply(value)
-              }
-              .toList, body)).filterNot(_.isEmpty)
-          )
-      })
+      AnyChar.rep.! ~ End).map {
+      case (version, statusCode, reasonPhrase, headers, body) =>
+        RtspResponse(version, statusCode, reasonPhrase,
+          headers
+            .map(header => RtspHeaderField.valuesMap.get(header._1) -> header._2)
+            .collect {
+              case (Some(responseHeader: RtspHeaderField.ResponseField), value: String) => responseHeader(value)
+            }
+            .toList,
+          Some(RtspEntity(headers
+            .map(header => RtspHeaderField.valuesMap.get(header._1) -> header._2)
+            .collect {
+              case (Some(entityHeader: RtspHeaderField.EntityField), value: String) => entityHeader.apply(value)
+            }
+            .toList, body)).filterNot(_.isEmpty)
+        )
+    }
 
   def fromByteString(byteString: ByteString)(implicit byteOrder: ByteOrder): RtspResponse = {
     val responseString = byteString.utf8String

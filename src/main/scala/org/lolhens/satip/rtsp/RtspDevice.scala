@@ -8,7 +8,7 @@ case class RtspDevice(serverAddress: String,
                       friendlyName: String) {
   @volatile private var _closed = false
 
-  def closed = _closed
+  def closed: Boolean = _closed
 
-  def close() = _closed = true
+  def close(): Unit = _closed = true
 }

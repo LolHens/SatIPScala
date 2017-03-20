@@ -13,13 +13,13 @@ class RtcpReceiverReportPacket(val rtcpPacket: RtcpPacket,
                                val profileExtension: Option[ByteString]) {
   override def toString =
     s"""Receiver Report.
-        |Version: ${rtcpPacket.version}.
-        |Padding: ${rtcpPacket.padding}.
-        |Report Count: ${rtcpPacket.reportCount}.
-        |Packet Type: ${rtcpPacket.packetType}.
-        |Length: ${rtcpPacket.length}.
-        |SynchronizationSource: $synchronizationSource.
-        |.""".stripMargin
+       |Version: ${rtcpPacket.version}.
+       |Padding: ${rtcpPacket.padding}.
+       |Report Count: ${rtcpPacket.reportCount}.
+       |Packet Type: ${rtcpPacket.packetType}.
+       |Length: ${rtcpPacket.length}.
+       |SynchronizationSource: $synchronizationSource.
+       |.""".stripMargin
 }
 
 object RtcpReceiverReportPacket {

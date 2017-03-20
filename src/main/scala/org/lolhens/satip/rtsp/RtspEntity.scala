@@ -5,5 +5,5 @@ package org.lolhens.satip.rtsp
   */
 case class RtspEntity(entityHeaders: List[RtspHeaderField.EntityField#Value],
                       body: String) {
-  def isEmpty = entityHeaders.isEmpty && body == ""
+  def isEmpty: Boolean = entityHeaders.isEmpty && body == ""
 }

@@ -11,13 +11,13 @@ class RtcpSourceDescriptionPacket(val rtcpPacket: RtcpPacket,
                                   val descriptions: List[SourceDescriptionBlock]) {
   override def toString =
     s"""Receiver Report.
-        |Version: ${rtcpPacket.version}.
-        |Padding: ${rtcpPacket.padding}.
-        |Report Count: ${rtcpPacket.reportCount}.
-        |Packet Type: ${rtcpPacket.packetType}.
-        |Length: ${rtcpPacket.length}.
-        |Descriptions: ${descriptions.mkString(", ")}.
-        |.""".stripMargin
+       |Version: ${rtcpPacket.version}.
+       |Padding: ${rtcpPacket.padding}.
+       |Report Count: ${rtcpPacket.reportCount}.
+       |Packet Type: ${rtcpPacket.packetType}.
+       |Length: ${rtcpPacket.length}.
+       |Descriptions: ${descriptions.mkString(", ")}.
+       |.""".stripMargin
 }
 
 object RtcpSourceDescriptionPacket {

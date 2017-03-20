@@ -12,5 +12,5 @@ object SmpteType {
 
   val values: List[SmpteType] = List(smpte, smpte30Drop, smpte25)
 
-  lazy val valuesMap = values.map(e => e.name -> e).toMap
+  lazy val valuesMap: Map[String, SmpteType] = values.map(e => e.name -> e).toMap
 }

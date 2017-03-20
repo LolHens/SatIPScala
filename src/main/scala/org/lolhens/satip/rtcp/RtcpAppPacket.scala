@@ -15,16 +15,16 @@ class RtcpAppPacket(val rtcpPacket: RtcpPacket,
                     val data: Option[String]) {
   override def toString =
     s"""Application Specific.
-        |Version: ${rtcpPacket.version}.
-        |Padding: ${rtcpPacket.padding}.
-        |Report Count: ${rtcpPacket.reportCount}.
-        |Packet Type: ${rtcpPacket.packetType}.
-        |Length: ${rtcpPacket.length}.
-        |SynchronizationSource: $synchronizationSource.
-        |Name: $name.
-        |Identity: $identity.
-        |Data: ${data.getOrElse("")}.
-        |.""".stripMargin
+       |Version: ${rtcpPacket.version}.
+       |Padding: ${rtcpPacket.padding}.
+       |Report Count: ${rtcpPacket.reportCount}.
+       |Packet Type: ${rtcpPacket.packetType}.
+       |Length: ${rtcpPacket.length}.
+       |SynchronizationSource: $synchronizationSource.
+       |Name: $name.
+       |Identity: $identity.
+       |Data: ${data.getOrElse("")}.
+       |.""".stripMargin
 }
 
 object RtcpAppPacket {

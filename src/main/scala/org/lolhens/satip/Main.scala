@@ -2,6 +2,7 @@ package org.lolhens.satip
 
 import java.net.Socket
 
+import akka.actor.{Actor, ActorSystem, Props}
 import ch.qos.logback.classic.{Level, Logger}
 import org.fourthline.cling.model.message.header.STAllHeader
 import org.fourthline.cling.model.meta.RemoteDevice
@@ -9,6 +10,7 @@ import org.fourthline.cling.model.types.DeviceType
 import org.fourthline.cling.registry.{DefaultRegistryListener, Registry, RegistryListener}
 import org.fourthline.cling.{UpnpService, UpnpServiceImpl}
 import org.lolhens.satip.rtsp.{RtspMethod, RtspRequest, RtspSession}
+import org.lolhens.satip.upnp.UpnpServiceActor
 import org.seamless.util.logging.LoggingUtil
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
@@ -29,7 +31,24 @@ object Main {
     val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).asInstanceOf[Logger]
     rootLogger.setLevel(Level.INFO)
     //testUpnp()
-    RtspSession.test
+    //RtspSession.test
+    testUpnp2()
+  }
+
+  def testUpnp2() = {
+    class UpnpListener extends Actor {
+      val upnpService = context.actorOf(UpnpServiceActor.props)
+      upnpService ! UpnpServiceActor.Register(self)
+
+      override def receive: Receive = {
+        case e => println(e)
+      }
+    }
+
+    val props = Props[UpnpListener]
+
+    val actorSystem = ActorSystem()
+    actorSystem.actorOf(props)
   }
 
 

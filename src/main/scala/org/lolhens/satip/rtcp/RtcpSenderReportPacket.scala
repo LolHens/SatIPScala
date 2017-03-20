@@ -18,17 +18,17 @@ class RtcpSenderReportPacket(val rtcpPacket: RtcpPacket,
                              val profileExtension: Option[ByteString]) {
   override def toString =
     s"""Sender Report.
-        |Version: ${rtcpPacket.version}.
-        |Padding: ${rtcpPacket.padding}.
-        |Report Count: ${rtcpPacket.reportCount}.
-        |Packet Type: ${rtcpPacket.packetType}.
-        |Length: ${rtcpPacket.length}.
-        |SynchronizationSource: $synchronizationSource.
-        |NTP Timestamp: ${nptTimestamp /*TODO*/}.
-        |RTP Timestamp: $rtpTimestamp.
-        |Sender Packet Count: $senderPacketCount.
-        |Sender Octet Count: $senderOctetCount.
-        |.""".stripMargin
+       |Version: ${rtcpPacket.version}.
+       |Padding: ${rtcpPacket.padding}.
+       |Report Count: ${rtcpPacket.reportCount}.
+       |Packet Type: ${rtcpPacket.packetType}.
+       |Length: ${rtcpPacket.length}.
+       |SynchronizationSource: $synchronizationSource.
+       |NTP Timestamp: ${nptTimestamp /*TODO*/}.
+       |RTP Timestamp: $rtpTimestamp.
+       |Sender Packet Count: $senderPacketCount.
+       |Sender Octet Count: $senderOctetCount.
+       |.""".stripMargin
 }
 
 object RtcpSenderReportPacket {

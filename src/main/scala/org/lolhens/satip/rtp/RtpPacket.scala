@@ -21,18 +21,18 @@ class RtpPacket(val version: Int,
                 val extensionHeaderId: Int = 0,
                 val extensionHeaderLength: Int = 0,
                 val payload: Option[ByteString] = None) {
-  val headerLength = RtpPacket.minHeaderLength
+  val headerLength: Int = RtpPacket.minHeaderLength
 
   override def toString: String =
     s"""Version: $version
-        |Padding: $padding
-        |Extension: $extension
-        |Contributing Source Identifiers Count: $contributionSourceCount
-        |Marker: $marker
-        |Payload Type: $payloadType
-        |Sequence Number: $sequenceNumber
-        |Timestamp: $timestamp
-        |Synchronization Source Identifier: $synchronizationSource""".stripMargin
+       |Padding: $padding
+       |Extension: $extension
+       |Contributing Source Identifiers Count: $contributionSourceCount
+       |Marker: $marker
+       |Payload Type: $payloadType
+       |Sequence Number: $sequenceNumber
+       |Timestamp: $timestamp
+       |Synchronization Source Identifier: $synchronizationSource""".stripMargin
 }
 
 object RtpPacket {
