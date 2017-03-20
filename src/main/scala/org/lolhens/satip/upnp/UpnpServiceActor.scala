@@ -15,22 +15,27 @@ class UpnpServiceActor extends Actor {
   val upnpService = new UpnpServiceImpl(new RegistryListener {
     override def localDeviceAdded(registry: Registry, localDevice: LocalDevice): Unit =
       self ! LocalDeviceAdded(registry, localDevice)
+
     override def localDeviceRemoved(registry: Registry, localDevice: LocalDevice): Unit =
       self ! LocalDeviceRemoved(registry, localDevice)
 
     override def remoteDeviceAdded(registry: Registry, remoteDevice: RemoteDevice): Unit =
       self ! RemoteDeviceAdded(registry, remoteDevice)
+
     override def remoteDeviceRemoved(registry: Registry, remoteDevice: RemoteDevice): Unit =
       self ! RemoteDeviceRemoved(registry, remoteDevice)
+
     override def remoteDeviceUpdated(registry: Registry, remoteDevice: RemoteDevice): Unit =
       self ! RemoteDeviceUpdated(registry, remoteDevice)
 
     override def remoteDeviceDiscoveryStarted(registry: Registry, remoteDevice: RemoteDevice): Unit =
       self ! RemoteDeviceDiscoveryStarted(registry, remoteDevice)
+
     override def remoteDeviceDiscoveryFailed(registry: Registry, remoteDevice: RemoteDevice, exception: Exception): Unit =
       self ! RemoteDeviceDiscoveryFailed(registry, remoteDevice, exception)
 
     override def beforeShutdown(registry: Registry): Unit = ()
+
     override def afterShutdown(): Unit = ()
   })
 
@@ -46,6 +51,12 @@ class UpnpServiceActor extends Actor {
 
     case Search =>
       upnpService.getControlPoint.search(new STAllHeader())
+
+    case ListLocalDevices =>
+      sender() ! upnpService.getRegistry.getLocalDevices
+
+    case ListRemoteDevices =>
+      sender() ! upnpService.getRegistry.getRemoteDevices
 
     case event: Event =>
       eventRouter.route(event, self)
@@ -68,6 +79,10 @@ object UpnpServiceActor {
   case class Register(actorRef: ActorRef) extends Command
 
   case object Search extends Command
+
+  case object ListLocalDevices
+
+  case object ListRemoteDevices
 
   case class LocalDeviceAdded(registry: Registry, localDevice: LocalDevice) extends Event
 
