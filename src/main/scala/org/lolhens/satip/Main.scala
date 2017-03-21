@@ -11,7 +11,7 @@ import org.fourthline.cling.registry.{DefaultRegistryListener, Registry, Registr
 import org.fourthline.cling.{UpnpService, UpnpServiceImpl}
 import org.lolhens.satip.rtsp.{RtspMethod, RtspRequest, RtspSession}
 import org.lolhens.satip.upnp.UpnpServiceActor
-import org.lolhens.satip.upnp.UpnpServiceActor.RemoteDeviceUpdated
+import org.lolhens.satip.upnp.UpnpServiceActor.{DeviceUpdated}
 import org.seamless.util.logging.LoggingUtil
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
@@ -42,7 +42,7 @@ object Main {
       upnpService ! UpnpServiceActor.Register(self)
 
       override def receive: Receive = {
-        case RemoteDeviceUpdated(_, _) =>
+        case DeviceUpdated(_, _) =>
         case e => println(e)
       }
     }
