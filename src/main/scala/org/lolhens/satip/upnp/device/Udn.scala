@@ -2,6 +2,7 @@ package org.lolhens.satip.upnp.device
 
 import java.util.UUID
 
+import fastparse.all._
 import org.fourthline.cling.model.types.UDN
 
 /**
@@ -15,4 +16,6 @@ object Udn {
   def apply(udn: UDN) = Udn(udn.getIdentifierString)
 
   def random: Udn = Udn(UUID.randomUUID().toString)
+
+  def parser: Parser[Udn] = ("uuid:" ~ AnyChar.rep.!).map(Udn(_))
 }

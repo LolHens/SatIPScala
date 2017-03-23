@@ -1,7 +1,9 @@
 package org.lolhens.satip.satip
 
 import akka.actor.{Actor, ActorRef}
-import org.lolhens.satip.upnp.{DeviceType, RemoteUpnpDevice, UpnpServiceActor}
+import org.lolhens.satip.upnp.device.DeviceType
+import org.lolhens.satip.upnp.{RemoteUpnpDevice, UpnpServiceActor}
+
 import scala.xml.XML
 
 /**

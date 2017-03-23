@@ -3,6 +3,7 @@ package org.lolhens.satip.upnp
 import java.net.URL
 
 import org.fourthline.cling.model.meta.RemoteDevice
+import org.lolhens.satip.upnp.device.DeviceType
 
 import scala.xml.{Elem, XML}
 
