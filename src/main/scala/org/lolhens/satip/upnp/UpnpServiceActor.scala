@@ -1,6 +1,6 @@
 package org.lolhens.satip.upnp
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Props, Terminated}
+import akka.actor.{Actor, ActorRef, ActorRefFactory, Props, Terminated}
 import akka.routing.{BroadcastRoutingLogic, Router}
 import org.fourthline.cling.UpnpServiceImpl
 import org.fourthline.cling.model.message.header.STAllHeader
@@ -15,19 +15,19 @@ import org.lolhens.satip.upnp.device.UpnpDevice
 class UpnpServiceActor extends Actor {
   val upnpService = new UpnpServiceImpl(new DefaultRegistryListener {
     override def localDeviceAdded(registry: Registry, localDevice: LocalDevice): Unit =
-      self ! DeviceAdded(registry, UpnpDevice.apply3(localDevice))
+      self ! DeviceAdded(registry, UpnpDevice(localDevice))
 
     override def localDeviceRemoved(registry: Registry, localDevice: LocalDevice): Unit =
-      self ! DeviceRemoved(registry, UpnpDevice.apply3(localDevice))
+      self ! DeviceRemoved(registry, UpnpDevice(localDevice))
 
     override def remoteDeviceAdded(registry: Registry, remoteDevice: RemoteDevice): Unit =
-      self ! DeviceAdded(registry, UpnpDevice.apply3(remoteDevice))
+      self ! DeviceAdded(registry, UpnpDevice(remoteDevice))
 
     override def remoteDeviceRemoved(registry: Registry, remoteDevice: RemoteDevice): Unit =
-      self ! DeviceRemoved(registry, UpnpDevice.apply3(remoteDevice))
+      self ! DeviceRemoved(registry, UpnpDevice(remoteDevice))
 
     override def remoteDeviceUpdated(registry: Registry, remoteDevice: RemoteDevice): Unit =
-      self ! DeviceUpdated(registry, UpnpDevice.apply3(remoteDevice))
+      self ! DeviceUpdated(registry, UpnpDevice(remoteDevice))
   })
 
   var eventRouter = Router(BroadcastRoutingLogic())
@@ -58,6 +58,8 @@ class UpnpServiceActor extends Actor {
 
         case DeviceRemoved(registry, device) =>
           upnpDevices = upnpDevices.filterNot(_ == device)
+
+        case _ =>
       }
 
       eventRouter.route(event, self)
@@ -71,7 +73,7 @@ class UpnpServiceActor extends Actor {
 object UpnpServiceActor {
   val props: Props = Props[UpnpServiceActor]
 
-  def actor(implicit actorSystem: ActorSystem): ActorRef = actorSystem.actorOf(props)
+  def actor(implicit actorSystem: ActorRefFactory): ActorRef = actorSystem.actorOf(props)
 
   trait Command
 

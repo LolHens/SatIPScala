@@ -1,7 +1,5 @@
 package org.lolhens.satip
 
-import java.net.Socket
-
 import akka.actor.{Actor, ActorSystem, Props}
 import ch.qos.logback.classic.{Level, Logger}
 import org.fourthline.cling.model.message.header.STAllHeader
@@ -9,9 +7,9 @@ import org.fourthline.cling.model.meta.RemoteDevice
 import org.fourthline.cling.model.types.DeviceType
 import org.fourthline.cling.registry.{DefaultRegistryListener, Registry, RegistryListener}
 import org.fourthline.cling.{UpnpService, UpnpServiceImpl}
-import org.lolhens.satip.rtsp.{RtspMethod, RtspRequest, RtspSession}
+import org.lolhens.satip.satip.SatIpDiscoveryActor
 import org.lolhens.satip.upnp.UpnpServiceActor
-import org.lolhens.satip.upnp.UpnpServiceActor.{DeviceUpdated}
+import org.lolhens.satip.upnp.UpnpServiceActor.DeviceUpdated
 import org.seamless.util.logging.LoggingUtil
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
@@ -29,11 +27,18 @@ object Main {
     println(builder.result().toInt)*/
     LoggingUtil.resetRootHandler(new SLF4JBridgeHandler())
 
-    val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).asInstanceOf[Logger]
-    rootLogger.setLevel(Level.INFO)
+    //val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).asInstanceOf[Logger]
+    //rootLogger.setLevel(Level.INFO)
     //testUpnp()
     //RtspSession.test
-    testUpnp2()
+    testUpnp3()
+  }
+
+  def testUpnp3() = {
+    implicit val actorSystem = ActorSystem()
+
+    val satIpDiscoveryActor = SatIpDiscoveryActor.actor()
+
   }
 
   def testUpnp2() = {
@@ -52,7 +57,6 @@ object Main {
     val actorSystem = ActorSystem()
     actorSystem.actorOf(props)
   }
-
 
 
   def testUpnp() = {
@@ -93,7 +97,7 @@ object Main {
           val devices = device.findDevices(new DeviceType("ses-com", "SatIPServer", 1))
           println(devices.map(device => (XML.load(device.getIdentity.getDescriptorURL) \ "device").map(_.namespace).mkString(",")).mkString("\n---\n"))
           devices.map { device =>
-            val ip  = device.getIdentity.getDescriptorURL.getHost
+            val ip = device.getIdentity.getDescriptorURL.getHost
             println(ip)
 
             println(device.getDetails.getBaseURL)
