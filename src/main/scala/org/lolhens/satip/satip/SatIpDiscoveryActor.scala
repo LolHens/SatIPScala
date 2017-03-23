@@ -2,7 +2,7 @@ package org.lolhens.satip.satip
 
 import akka.actor.{Actor, ActorRef}
 import org.lolhens.satip.upnp.device.DeviceType
-import org.lolhens.satip.upnp.{RemoteUpnpDevice, UpnpServiceActor}
+import org.lolhens.satip.upnp.{UpnpDevice, UpnpServiceActor}
 
 import scala.xml.XML
 
@@ -13,7 +13,7 @@ class SatIpDiscoveryActor(upnpService: ActorRef) extends Actor {
   upnpService ! UpnpServiceActor.Register(self)
 
   override def receive: Receive = {
-    case UpnpServiceActor.DeviceAdded(registry, device: RemoteUpnpDevice) =>
+    case UpnpServiceActor.DeviceAdded(registry, device: UpnpDevice) =>
       device.deviceType match {
         case DeviceType("ses-com", "SatIPServer", version) =>
           println(version)

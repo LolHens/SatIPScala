@@ -7,6 +7,7 @@ import org.fourthline.cling.model.message.header.STAllHeader
 import org.fourthline.cling.model.meta.{LocalDevice, RemoteDevice}
 import org.fourthline.cling.registry.{DefaultRegistryListener, Registry}
 import org.lolhens.satip.upnp.UpnpServiceActor._
+import org.lolhens.satip.upnp.device.UpnpDevice
 
 /**
   * Created by u016595 on 20.03.2017.
@@ -14,19 +15,19 @@ import org.lolhens.satip.upnp.UpnpServiceActor._
 class UpnpServiceActor extends Actor {
   val upnpService = new UpnpServiceImpl(new DefaultRegistryListener {
     override def localDeviceAdded(registry: Registry, localDevice: LocalDevice): Unit =
-      self ! DeviceAdded(registry, new LocalUpnpDevice(localDevice))
+      self ! DeviceAdded(registry, UpnpDevice.apply3(localDevice))
 
     override def localDeviceRemoved(registry: Registry, localDevice: LocalDevice): Unit =
-      self ! DeviceRemoved(registry, new LocalUpnpDevice(localDevice))
+      self ! DeviceRemoved(registry, UpnpDevice.apply3(localDevice))
 
     override def remoteDeviceAdded(registry: Registry, remoteDevice: RemoteDevice): Unit =
-      self ! DeviceAdded(registry, new RemoteUpnpDevice(remoteDevice))
+      self ! DeviceAdded(registry, UpnpDevice.apply3(remoteDevice))
 
     override def remoteDeviceRemoved(registry: Registry, remoteDevice: RemoteDevice): Unit =
-      self ! DeviceRemoved(registry, new RemoteUpnpDevice(remoteDevice))
+      self ! DeviceRemoved(registry, UpnpDevice.apply3(remoteDevice))
 
     override def remoteDeviceUpdated(registry: Registry, remoteDevice: RemoteDevice): Unit =
-      self ! DeviceUpdated(registry, new RemoteUpnpDevice(remoteDevice))
+      self ! DeviceUpdated(registry, UpnpDevice.apply3(remoteDevice))
   })
 
   var eventRouter = Router(BroadcastRoutingLogic())
@@ -86,7 +87,7 @@ object UpnpServiceActor {
 
   case class DeviceRemoved(registry: Registry, device: UpnpDevice) extends Event
 
-  case class DeviceUpdated(registry: Registry, device: RemoteUpnpDevice) extends Event
+  case class DeviceUpdated(registry: Registry, device: UpnpDevice) extends Event
 
   case class RemoteDeviceDiscoveryStarted(registry: Registry, remoteDevice: RemoteDevice) extends Event
 

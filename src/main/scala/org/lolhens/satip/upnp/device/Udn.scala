@@ -13,7 +13,7 @@ case class Udn(identifier: String) {
 }
 
 object Udn {
-  def apply(udn: UDN) = Udn(udn.getIdentifierString)
+  def apply(udn: UDN): Udn = Udn(udn.getIdentifierString)
 
   def random: Udn = Udn(UUID.randomUUID().toString)
 
