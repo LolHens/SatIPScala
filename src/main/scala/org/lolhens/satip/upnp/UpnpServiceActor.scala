@@ -20,8 +20,8 @@ class UpnpServiceActor extends Actor {
     override def localDeviceRemoved(registry: Registry, localDevice: LocalDevice): Unit =
       self ! DeviceRemoved(registry, UpnpDevice(localDevice))
 
-    override def remoteDeviceAdded(registry: Registry, remoteDevice: RemoteDevice): Unit =
-      self ! DeviceAdded(registry, UpnpDevice(remoteDevice))
+    override def remoteDeviceAdded(registry: Registry, remoteDevice: RemoteDevice): Unit = {println(remoteDevice.getIdentity().getDescriptorURL + " " + remoteDevice.getDetails().getBaseURL)
+      self ! DeviceAdded(registry, UpnpDevice(remoteDevice))}
 
     override def remoteDeviceRemoved(registry: Registry, remoteDevice: RemoteDevice): Unit =
       self ! DeviceRemoved(registry, UpnpDevice(remoteDevice))

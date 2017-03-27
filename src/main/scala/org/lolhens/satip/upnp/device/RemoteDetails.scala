@@ -13,7 +13,9 @@ import scala.xml.{Elem, XML}
 case class RemoteDetails(descriptorUrl: URL,
                          localInterfaceAddress: InetAddress,
                          remoteInterfaceMac: Option[ByteVector]) {
-  lazy val remoteInterfaceAddress: InetAddress = InetAddress.getByName(descriptorUrl.getHost)
+  def remoteHost: String = descriptorUrl.getHost
+
+  lazy val remoteInterfaceAddress: InetAddress = InetAddress.getByName(remoteHost)
 
   lazy val wakeOnLanBytes: Option[ByteVector] = remoteInterfaceMac.map(mac =>
     ByteVector.concat((0 until 6).map(_ => ByteVector(0xFF))) ++

@@ -42,7 +42,8 @@ class RtspSession(val rtspDevice: RtspDevice,
 
   def sendRequest(request: RtspRequest) = {
     if (rtspSocket == null) connect()
-    val newRequest = request.copy(requestHeaders = request.requestHeaders :+ RtspHeaderField.CSeq(rtspSequenceNum.toString))
+    val newRequest = request //.copy(requestHeaders = request.requestHeaders :+ RtspHeaderField.CSeq(rtspSequenceNum.toString))
+    println(newRequest.request)
     rtspSequenceNum += 1
     val bytes = newRequest.toByteString
     if (rtspSocket != null) {
@@ -101,11 +102,23 @@ class RtspSession(val rtspDevice: RtspDevice,
   }
 
   def describe() = {
-    rtspSocket = new Socket("192.168.1.5", 554)
-    val request = RtspRequest.describe(s"rtsp://192.168.1.5:554/stream=0", 0, List(
-      RtspHeaderField.Accept("application/sdp"),
-      RtspHeaderField.Session("0")
+    //rtspSocket = new Socket("192.168.1.6", 554)
+    val request = RtspRequest.describe(s"rtsp://${rtspDevice.serverAddress}:554/"/*stream=0"*/, cSeq = 1, List(
+      //RtspHeaderField.Accept("application/sdp")//,
+      //RtspHeaderField.Session("0")
     ), RtspEntity(Nil, ""))
+    println(request.request)
+    sendRequest(request)
+    receiveResponse
+  }
+
+  def options() = {
+    //rtspSocket = new Socket("192.168.1.6", 554)
+    val request = RtspRequest.options(s"rtsp://${rtspDevice.serverAddress}:554/"/*stream=0"*/, cSeq = 1, List(
+      RtspHeaderField.Accept("application/sdp")//,
+      //RtspHeaderField.Session("0")
+    ))
+    println(request.request)
     sendRequest(request)
     receiveResponse
   }
@@ -133,8 +146,8 @@ object RtspSession {
       ListPIDs(PID.Num(0))
     )
 
-    session.setup(query.buildQueryString, TransmissionMode.Unicast)
-    //session.describe()
+    //session.setup(query.buildQueryString, TransmissionMode.Unicast)
+    println(session.describe())
   }
 
   import fastparse.all._

@@ -4,11 +4,10 @@ import fastparse.all._
 import org.fourthline.cling.model.meta.RemoteDevice
 import org.lolhens.satip.rtsp._
 import org.lolhens.satip.rtsp.data.RtspVersion
-import org.lolhens.satip.satip.SatIpDevice.Tuner
 import org.lolhens.satip.util.ParserUtils._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
 /**
@@ -18,25 +17,25 @@ class SatIpDevice(val baseUrl: String,
                   val friendlyName: String,
                   val uniqueDeviceName: String,
                   val description: String,
-                  val capabilities: String,
+                  val capabilities: List[Tuner],
                   val hasSatteliteBroadcastSupport: Boolean,
                   val hasCableBroadcastSupport: Boolean,
-                  val hasTerrestrialBroadcastSupport: Boolean) {
-  val responseBodyParser = P(("s=SatIPServer:1" ~ s1 ~ (!space ~ AnyChar).rep(min = 1).! ~ s1).?)
+                  val hasTerrestrialBroadcastSupport: Boolean /*,
+                  upnpDevice: UpnpDevice = null*/) {
+  val responseBodyParser: Parser[Option[String]] =
+    ("s=SatIPServer:1" ~ s1 ~ (!space ~ AnyChar).rep(min = 1).! ~ s1).?
 
-  checkCapabilities("")
+  checkCapabilities(Nil)
 
-  def checkCapabilities(capabilities: String): Unit = {
+  def checkCapabilities(capabilities: List[String]): Unit = {
     implicit val rtspVersion = RtspVersion(1, 0)
     val tunerCount: Map[Tuner, Int] =
       capabilities
-        .split(",")
-        .map(_.split("-").head.trim.toLowerCase)
         .flatMap(Tuner.valueMap.get)
         .groupBy(e => e)
         .map(e => (e._1, e._2.length)) match {
         case empty if empty.isEmpty =>
-          val request = RtspRequest.describe( s"rtsp://$baseUrl/", 0, List(
+          val request = RtspRequest.describe(s"rtsp://$baseUrl/", 0, List(
             RtspHeaderField.Accept("application/sdp"),
             RtspHeaderField.Connection("close")
           ), RtspEntity(Nil, ""))
@@ -48,7 +47,9 @@ class SatIpDevice(val baseUrl: String,
             println(response)
             response.statusCode match {
               case RtspStatusCode.ok =>
-                val frontEndInfo = response.entity.map(_.body).flatMap(body => responseBodyParser.parse(body).tried.toOption.flatten)
+                val frontEndInfo =
+                  response.entity.map(_.body)
+                    .flatMap(body => responseBodyParser.parse(body).tried.toOption.flatten)
                 frontEndInfo.map {
                   frontEndInfo =>
                     val frontEndCounts = frontEndInfo.split(",")
@@ -65,13 +66,15 @@ class SatIpDevice(val baseUrl: String,
                 }
 
               case RtspStatusCode.notFound =>
-                // the Sat>Ip server has no active stream
+              // the Sat>Ip server has no active stream
 
               case _ =>
                 ???
             }
           }, Duration.Inf)
           ???
+
+        //case
       }
 
 
@@ -82,20 +85,4 @@ object SatIpDevice {
   def fromUPnPDevice(device: RemoteDevice) = {
     device.getDetails.getBaseURL
   }
-
-  case class Tuner(name: String)
-
-  object Tuner {
-    val dvbs = Tuner("dvbs")
-    val dvbs2 = Tuner("dvbs2")
-    val dvbt = Tuner("dvbt")
-    val dvbt2 = Tuner("dvbt2")
-    val dvbc = Tuner("dvbc")
-    val dvbc2 = Tuner("dvbc2")
-
-    val values = List(dvbs, dvbs2, dvbt, dvbt2, dvbc, dvbc2)
-
-    lazy val valueMap = values.map(e => (e.name, e)).toMap
-  }
-
 }

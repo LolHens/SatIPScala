@@ -7,6 +7,7 @@ import org.fourthline.cling.model.meta.RemoteDevice
 import org.fourthline.cling.model.types.DeviceType
 import org.fourthline.cling.registry.{DefaultRegistryListener, Registry, RegistryListener}
 import org.fourthline.cling.{UpnpService, UpnpServiceImpl}
+import org.lolhens.satip.rtsp.RtspSession
 import org.lolhens.satip.satip.SatIpDiscoveryActor
 import org.lolhens.satip.upnp.UpnpServiceActor
 import org.lolhens.satip.upnp.UpnpServiceActor.DeviceUpdated
@@ -30,8 +31,8 @@ object Main {
     //val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).asInstanceOf[Logger]
     //rootLogger.setLevel(Level.INFO)
     //testUpnp()
-    //RtspSession.test
-    testUpnp3()
+    RtspSession.test
+    //testUpnp3()
   }
 
   def testUpnp3() = {
