@@ -6,12 +6,14 @@ import org.lolhens.satip.satip.SatIpQuery.Parameter
   * Created by pierr on 25.02.2017.
   */
 case class SatIpQuery(params: Parameter*) {
-  def buildQueryString: String = params.map(param => s"${param.attribute}=${param.value}").mkString("&")
+  override def toString: String = params.mkString("&")
 }
 
 object SatIpQuery {
 
-  case class Parameter(name: String, attribute: String, value: String)
+  case class Parameter(name: String, attribute: String, value: String) {
+    override def toString: String = s"$attribute=$value"
+  }
 
   object Parameter {
 

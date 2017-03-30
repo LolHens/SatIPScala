@@ -39,9 +39,9 @@ object RtspResponse {
         )
     }
 
-  def fromByteString(byteString: ByteString)(implicit byteOrder: ByteOrder): RtspResponse = {
+  def fromByteString(byteString: ByteString): RtspResponse = {
     val responseString = byteString.utf8String
-    println(responseString)
+    //println(responseString)
     responseParser.parse(responseString).tried.get
   }
 }

@@ -1,5 +1,7 @@
 package org.lolhens.satip
 
+import java.net.InetSocketAddress
+
 import akka.actor.{Actor, ActorSystem, Props}
 import ch.qos.logback.classic.{Level, Logger}
 import org.fourthline.cling.model.message.header.STAllHeader
@@ -7,7 +9,9 @@ import org.fourthline.cling.model.meta.RemoteDevice
 import org.fourthline.cling.model.types.DeviceType
 import org.fourthline.cling.registry.{DefaultRegistryListener, Registry, RegistryListener}
 import org.fourthline.cling.{UpnpService, UpnpServiceImpl}
-import org.lolhens.satip.rtsp.RtspSession
+import org.lolhens.satip.rtsp.RtspActor.{Connect, Connected, Register, Write}
+import org.lolhens.satip.rtsp.data.RtspVersion
+import org.lolhens.satip.rtsp._
 import org.lolhens.satip.satip.SatIpDiscoveryActor
 import org.lolhens.satip.upnp.UpnpServiceActor
 import org.lolhens.satip.upnp.UpnpServiceActor.DeviceUpdated
@@ -31,8 +35,49 @@ object Main {
     //val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).asInstanceOf[Logger]
     //rootLogger.setLevel(Level.INFO)
     //testUpnp()
-    RtspSession.test
+    //RtspSession.test
     //testUpnp3()
+    testRtsp()
+  }
+
+  def testRtsp() = {
+    val actorSystem = ActorSystem()
+
+    class RtspListener extends Actor {
+      val rtspActor = RtspActor.actor
+
+      rtspActor ! Connect(new InetSocketAddress("10.1.2.6", 554))
+
+      override def receive: Receive = {
+        case Connected(remote, _) =>
+          println("Connected")
+          val connection = sender()
+
+          connection ! Register(self)
+
+          implicit val rtspVersion = RtspVersion(1, 0)
+          val request = RtspRequest.describe(s"rtsp://${"10.1.2.6"}:554/"/*stream=0"*/, cSeq = 1, List(
+            //RtspHeaderField.Accept("application/sdp")//,
+            //RtspHeaderField.Session("0")
+          ), RtspEntity(Nil, ""))
+
+          val request2 = RtspRequest.options(s"rtsp://${"10.1.2.6"}:554/"/*stream=0"*/, cSeq = 1, List(
+            RtspHeaderField.Accept("application/sdp")//,
+            //RtspHeaderField.Session("0")
+          ))
+
+          connection ! Write(request2)
+
+          context.become {
+            case msg => println(msg)
+          }
+
+        case msg => println(msg)
+      }
+    }
+
+    val props = Props[RtspListener]
+    actorSystem.actorOf(props)
   }
 
   def testUpnp3() = {

@@ -13,6 +13,8 @@ import org.lolhens.satip.upnp.device.UpnpDevice
   * Created by u016595 on 20.03.2017.
   */
 class UpnpServiceActor extends Actor {
+  var eventRouter = Router(BroadcastRoutingLogic())
+
   val upnpService = new UpnpServiceImpl(new DefaultRegistryListener {
     override def localDeviceAdded(registry: Registry, localDevice: LocalDevice): Unit =
       self ! DeviceAdded(registry, UpnpDevice(localDevice))
@@ -30,8 +32,6 @@ class UpnpServiceActor extends Actor {
       self ! DeviceUpdated(registry, UpnpDevice(remoteDevice))
   })
 
-  var eventRouter = Router(BroadcastRoutingLogic())
-
   def search(): Unit = upnpService.getControlPoint.search(new STAllHeader())
 
   var upnpDevices: List[UpnpDevice] = Nil
@@ -41,6 +41,10 @@ class UpnpServiceActor extends Actor {
       context watch ref
       eventRouter = eventRouter.addRoutee(ref)
       upnpDevices.foreach(ref ! DeviceAdded(upnpService.getRegistry, _))
+
+    case Unregister(ref) =>
+      context unwatch ref
+      eventRouter = eventRouter.removeRoutee(ref)
 
     case Terminated(ref) =>
       eventRouter = eventRouter.removeRoutee(ref)
@@ -80,6 +84,8 @@ object UpnpServiceActor {
   trait Event
 
   case class Register(actorRef: ActorRef) extends Command
+
+  case class Unregister(actorRef: ActorRef) extends Command
 
   case object Search extends Command
 

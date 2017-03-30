@@ -13,7 +13,7 @@ case class RtspRequest(method: RtspMethod,
                        requestHeaders: List[RtspHeaderField.RequestField#Value] = Nil,
                        entity: Option[RtspEntity] = None)
                       (implicit val version: RtspVersion) {
-  private def headers = requestHeaders ++ entity.map(_.entityHeaders).getOrElse(Nil)
+  private def headers = requestHeaders ++ entity.toList.flatMap(_.entityHeaders)
 
   private def body = entity.map(_.body).getOrElse("")
 
