@@ -9,7 +9,7 @@ import org.fourthline.cling.model.meta.RemoteDevice
 import org.fourthline.cling.model.types.DeviceType
 import org.fourthline.cling.registry.{DefaultRegistryListener, Registry, RegistryListener}
 import org.fourthline.cling.{UpnpService, UpnpServiceImpl}
-import org.lolhens.satip.rtsp.RtspActor.{Connect, Connected, Register, Write}
+import org.lolhens.satip.rtsp.RtspActor.{Connect, Connected, Write}
 import org.lolhens.satip.rtsp.data.RtspVersion
 import org.lolhens.satip.rtsp._
 import org.lolhens.satip.satip.SatIpDiscoveryActor
@@ -53,7 +53,7 @@ object Main {
           println("Connected")
           val connection = sender()
 
-          connection ! Register(self)
+          //connection ! Register(self)
 
           implicit val rtspVersion = RtspVersion(1, 0)
           val request = RtspRequest.describe(s"rtsp://${"10.1.2.6"}:554/"/*stream=0"*/, cSeq = 1, List(

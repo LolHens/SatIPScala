@@ -2,7 +2,7 @@ package org.lolhens.satip.rtsp
 
 import java.net.InetSocketAddress
 
-import akka.actor.{Actor, ActorRef, ActorRefFactory, Cancellable, Props, Stash, Terminated}
+import akka.actor.{Actor, ActorRef, ActorRefFactory, Cancellable, Kill, Props, Stash, Terminated}
 import akka.io.{IO, Tcp}
 import akka.pattern.ask
 import akka.routing.{BroadcastRoutingLogic, Router}
@@ -29,7 +29,7 @@ class RtspActor extends Actor with Stash {
           val connection = RtspConnectionActor.actor(tcpConnection)
 
           listener tell(Connected(remoteAddress, localAddress), connection)
-          tcpConnection ! Tcp.Register(connection, useResumeWriting = false)
+          tcpConnection ! Tcp.Register(connection, keepOpenOnPeerClosed = true, useResumeWriting = false)
 
           unstashAll()
           context.unbecome()
@@ -61,36 +61,33 @@ object RtspActor {
 
   case class Connected(remoteAddress: InetSocketAddress, localAddress: InetSocketAddress) extends Event
 
-  case class Register(actorRef: ActorRef) extends Command
+  //case class Register(actorRef: ActorRef) extends Command
 
-  case class Unregister(actorRef: ActorRef) extends Command
+  //case class Unregister(actorRef: ActorRef) extends Command
 
   case class Received(response: RtspResponse) extends Event
 
   case class Write(request: RtspRequest) extends Command
 
-  private case object Ack extends Event with Tcp.Event
+  case object ResponseTimeout extends Event
+
+  case object Ack extends Event with Tcp.Event
 
   private case object KeepAlive extends Event
 
   type ConnectionClosed = Tcp.ConnectionClosed
 
-  class RtspConnectionActor(tcpConnection: ActorRef) extends Actor with Stash {
-    var eventRouter = Router(BroadcastRoutingLogic())
+  class RtspConnectionActor(tcpConnection: ActorRef, responseTimeout: Timeout) extends Actor with Stash {
+    //var eventRouter = Router(BroadcastRoutingLogic())
 
     var cSeq = 1
 
-    val keepAliveTimer: Cancellable =
-      context.system.scheduler.schedule(0 millis, 10000 millis, self, KeepAlive)(context.system.dispatcher)
-
-    def handleClosed(closed: ConnectionClosed): Unit = {
-      eventRouter.route(closed, self)
-      context stop self
-      keepAliveTimer.cancel()
-    }
+    import context.dispatcher
+    val keepAliveTimer: Cancellable = context.system.scheduler
+      .schedule(0 millis, 5000 millis, self, KeepAlive)
 
     override def receive: Receive = {
-      case Register(ref) =>
+      /*case Register(ref) =>
         context watch ref
         eventRouter = eventRouter.addRoutee(ref)
 
@@ -99,7 +96,7 @@ object RtspActor {
         eventRouter = eventRouter.removeRoutee(ref)
 
       case Terminated(ref) =>
-        eventRouter = eventRouter.removeRoutee(ref)
+        eventRouter = eventRouter.removeRoutee(ref)*/
 
       case write@Write(request) =>
         val listener = sender()
@@ -109,36 +106,30 @@ object RtspActor {
           data
         }, Ack)
 
-        context.become {
+        context become {
           case Ack =>
+            import context.dispatcher
+            val responseTimeoutTimer = context.system.scheduler
+              .scheduleOnce(responseTimeout.duration, self, ResponseTimeout)
+
             unstashAll()
-            context.become {
-              case Tcp.Received(data) =>
-                //TODO: read until \r\n then read entity
-                listener ! Received {
-                  val response = RtspResponse.fromByteString(data)
-                  response
-                }
-
-                unstashAll()
-                context.unbecome()
-
-              case closed: ConnectionClosed =>
-                handleClosed(closed)
-
-              case _ => stash()
-            }
+            context become waitForResponse(listener, responseTimeoutTimer)
 
           case Tcp.CommandFailed(_: Tcp.Write) =>
             listener ! CommandFailed(write)
-            println("write failed")
+
+            unstashAll()
+            context.unbecome()
 
           case closed: ConnectionClosed =>
-            println("closed?")
             handleClosed(closed)
 
           case _ => stash()
         }
+
+      case Tcp.Received(_) => // ignore
+
+      case ResponseTimeout => // ignore
 
       case KeepAlive =>
         implicit val rtspVersion = RtspVersion(1, 0)
@@ -147,11 +138,46 @@ object RtspActor {
           //RtspHeaderField.Session("0")
         ))
 
+        println("keep alive")
+
         implicit val timeout = Timeout(1 second)
         self ? Write(options)
 
       case closed: ConnectionClosed =>
         handleClosed(closed)
+    }
+
+    def waitForResponse(listener: ActorRef, responseTimeoutTimer: Cancellable): Receive = {
+      case Tcp.Received(data) =>
+        responseTimeoutTimer.cancel()
+
+        //TODO: read until \r\n then read entity
+        listener ! Received {
+          val response = RtspResponse.fromByteString(data)
+          response
+        }
+
+        unstashAll()
+        context.unbecome()
+
+      case ResponseTimeout =>
+        listener ! ResponseTimeout
+
+        unstashAll()
+        context.unbecome()
+
+      case closed: ConnectionClosed =>
+        responseTimeoutTimer.cancel()
+
+        handleClosed(closed)
+
+      case _ => stash()
+    }
+
+    def handleClosed(closed: ConnectionClosed): Unit = {
+      //eventRouter.route(closed, self)
+      context stop self
+      keepAliveTimer.cancel()
     }
 
     override def postStop(): Unit = {
@@ -160,10 +186,14 @@ object RtspActor {
   }
 
   object RtspConnectionActor {
-    def props(tcpConnection: ActorRef): Props = Props(classOf[RtspConnectionActor], tcpConnection)
+    private val defaultTimeout: Timeout = Timeout(5 seconds)
 
-    def actor(tcpConnection: ActorRef)(implicit actorRefFactory: ActorRefFactory): ActorRef =
-      actorRefFactory.actorOf(props(tcpConnection), "RtspConnection")
+    def props(tcpConnection: ActorRef, responseTimeout: Timeout = defaultTimeout): Props =
+      Props(new RtspConnectionActor(tcpConnection, responseTimeout))
+
+    def actor(tcpConnection: ActorRef, responseTimeout: Timeout = defaultTimeout)
+             (implicit actorRefFactory: ActorRefFactory): ActorRef =
+      actorRefFactory.actorOf(props(tcpConnection, responseTimeout), "RtspConnection")
   }
 
 }
