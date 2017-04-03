@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorRef, ActorRefFactory, Props, Stash, Terminated}
 import akka.io.Tcp
 import akka.routing.{BroadcastRoutingLogic, Router}
 import org.lolhens.satip.rtsp.RtspActor._
-import org.lolhens.satip.upnp.UpnpServiceActor.{Register, Unregister}
+import org.lolhens.satip.rtsp.RtspConnectionActor.{Register, Unregister}
 
 /**
   * Created by pierr on 03.04.2017.
@@ -35,19 +35,16 @@ class RtspConnectionActor(tcpConnection: ActorRef) extends Actor with Stash {
       context become {
         case Ack =>
           listener ! Ack
-
           unstashAll()
           context.unbecome()
 
         case Tcp.CommandFailed(_: Tcp.Write) =>
           listener ! CommandFailed(write)
-
           unstashAll()
           context.unbecome()
 
         case _: ConnectionClosed =>
           stash()
-
           unstashAll()
           context.unbecome()
 

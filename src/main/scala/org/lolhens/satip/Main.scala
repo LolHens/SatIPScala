@@ -66,7 +66,7 @@ object Main {
             //RtspHeaderField.Session("0")
           ))
 
-          connection ! Write(request2)
+          connection ! request2
 
           context.become {
             case msg => println(msg)
