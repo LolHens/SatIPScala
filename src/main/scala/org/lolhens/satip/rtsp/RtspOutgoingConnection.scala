@@ -3,14 +3,17 @@ package org.lolhens.satip.rtsp
 import akka.actor.{Actor, ActorRef, ActorRefFactory, Props, Stash, Terminated}
 import akka.io.Tcp
 import akka.routing.{BroadcastRoutingLogic, Router}
-import org.lolhens.satip.rtsp.RtspActor._
-import org.lolhens.satip.rtsp.RtspConnectionActor.{Register, Unregister}
+import org.lolhens.satip.rtsp.Rtsp._
+import org.lolhens.satip.rtsp.RtspManager._
+import org.lolhens.satip.rtsp.RtspOutgoingConnection.{Register, Unregister}
 
 /**
   * Created by pierr on 03.04.2017.
   */
-class RtspConnectionActor(tcpConnection: ActorRef) extends Actor with Stash {
+private[rtsp] class RtspOutgoingConnection(tcpConnection: ActorRef) extends Actor with Stash {
   var eventRouter = Router(BroadcastRoutingLogic())
+
+  tcpConnection ! Tcp.Register(self, keepOpenOnPeerClosed = true, useResumeWriting = false)
 
   override def receive: Receive = {
     case Register(ref) =>
@@ -63,13 +66,13 @@ class RtspConnectionActor(tcpConnection: ActorRef) extends Actor with Stash {
   }
 }
 
-object RtspConnectionActor {
-  def props(tcpConnection: ActorRef): Props =
-    Props(new RtspConnectionActor(tcpConnection))
+object RtspOutgoingConnection {
+  private[rtsp] def props(tcpConnection: ActorRef): Props =
+    Props(new RtspOutgoingConnection(tcpConnection))
 
-  def actor(tcpConnection: ActorRef)
+  private[rtsp] def actor(tcpConnection: ActorRef)
            (implicit actorRefFactory: ActorRefFactory): ActorRef =
-    actorRefFactory.actorOf(props(tcpConnection), "RtspConnection")
+    actorRefFactory.actorOf(props(tcpConnection), "RTSP-Outgoing-Connection")
 
   case class Register(actorRef: ActorRef) extends Command
 

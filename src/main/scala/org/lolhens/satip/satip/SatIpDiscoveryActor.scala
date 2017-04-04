@@ -65,7 +65,7 @@ class SatIpDiscoveryActor(upnpService: ActorRef) extends Actor {
                   println(request.request)
                   println(response)
                   response.statusCode match {
-                    case RtspStatusCode.ok =>
+                    case RtspStatusCode.Ok =>
                       val frontEndInfo =
                         response.entity.map(_.body)
                           .flatMap(body => responseBodyParser.parse(body).tried.toOption.flatten)
@@ -84,7 +84,7 @@ class SatIpDiscoveryActor(upnpService: ActorRef) extends Actor {
                           ???
                       }
 
-                    case RtspStatusCode.notFound =>
+                    case RtspStatusCode.NotFound =>
                     // the Sat>Ip server has no active stream
 
                     case _ =>

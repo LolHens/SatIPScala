@@ -12,8 +12,8 @@ import org.lolhens.satip.util.ParserUtils._
   */
 case class RtspResponse(rtspVersion: RtspVersion,
                         statusCode: RtspStatusCode,
-                        reasonPhrase: String,
-                        responseHeaders: List[RtspHeaderField.ResponseField#Value],
+                        reason: String,
+                        headers: List[RtspHeaderField.ResponseField#Value],
                         entity: Option[RtspEntity])
 
 object RtspResponse {
@@ -22,8 +22,8 @@ object RtspResponse {
       (!("." | "\r\n") ~ AnyChar).rep(min = 1).?.! ~ "\r\n" ~
       ((!":" ~ AnyChar).rep.! ~ ":" ~ (!"\r\n" ~ AnyChar).rep.!.map(_.trim) ~ "\r\n").rep ~ "\r\n" ~
       AnyChar.rep.! ~ End).map {
-      case (version, statusCode, reasonPhrase, headers, body) =>
-        RtspResponse(version, statusCode, reasonPhrase,
+      case (version, statusCode, reason, headers, body) =>
+        RtspResponse(version, statusCode, reason,
           headers
             .map(header => RtspHeaderField.valuesMap.get(header._1) -> header._2)
             .collect {

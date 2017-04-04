@@ -3,20 +3,19 @@ package org.lolhens.satip
 import java.net.InetSocketAddress
 
 import akka.actor.{Actor, ActorSystem, Props}
-import ch.qos.logback.classic.{Level, Logger}
+import akka.io.IO
 import org.fourthline.cling.model.message.header.STAllHeader
 import org.fourthline.cling.model.meta.RemoteDevice
 import org.fourthline.cling.model.types.DeviceType
 import org.fourthline.cling.registry.{DefaultRegistryListener, Registry, RegistryListener}
 import org.fourthline.cling.{UpnpService, UpnpServiceImpl}
-import org.lolhens.satip.rtsp.RtspActor.{Connect, Connected, Write}
-import org.lolhens.satip.rtsp.data.RtspVersion
+import org.lolhens.satip.rtsp.Rtsp.{Connect, Connected}
 import org.lolhens.satip.rtsp._
+import org.lolhens.satip.rtsp.data.RtspVersion
 import org.lolhens.satip.satip.SatIpDiscoveryActor
 import org.lolhens.satip.upnp.UpnpServiceActor
 import org.lolhens.satip.upnp.UpnpServiceActor.DeviceUpdated
 import org.seamless.util.logging.LoggingUtil
-import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
 
 import scala.xml.XML
@@ -44,9 +43,7 @@ object Main {
     val actorSystem = ActorSystem()
 
     class RtspListener extends Actor {
-      val rtspActor = RtspActor.actor
-
-      rtspActor ! Connect(new InetSocketAddress("10.1.2.6", 554))
+      IO(Rtsp)(actorSystem) ! Connect(new InetSocketAddress("10.1.2.6", 554))
 
       override def receive: Receive = {
         case Connected(remote, _) =>
@@ -56,13 +53,13 @@ object Main {
           //connection ! Register(self)
 
           implicit val rtspVersion = RtspVersion(1, 0)
-          val request = RtspRequest.describe(s"rtsp://${"10.1.2.6"}:554/"/*stream=0"*/, cSeq = 1, List(
+          val request = RtspRequest.describe(s"rtsp://${"10.1.2.6"}:554/" /*stream=0"*/ , cSeq = 1, List(
             //RtspHeaderField.Accept("application/sdp")//,
             //RtspHeaderField.Session("0")
           ), RtspEntity(Nil, ""))
 
-          val request2 = RtspRequest.options(s"rtsp://${"10.1.2.6"}:554/"/*stream=0"*/, cSeq = 1, List(
-            RtspHeaderField.Accept("application/sdp")//,
+          val request2 = RtspRequest.options(s"rtsp://${"10.1.2.6"}:554/" /*stream=0"*/ , cSeq = 1, List(
+            RtspHeaderField.Accept("application/sdp") //,
             //RtspHeaderField.Session("0")
           ))
 
@@ -76,7 +73,7 @@ object Main {
       }
     }
 
-    val props = Props[RtspListener]
+    val props = Props(new RtspListener())
     actorSystem.actorOf(props)
   }
 

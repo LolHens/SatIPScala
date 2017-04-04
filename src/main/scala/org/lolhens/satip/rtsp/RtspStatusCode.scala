@@ -6,99 +6,101 @@ import org.lolhens.satip.util.ParserUtils._
 /**
   * Created by pierr on 23.10.2016.
   */
-case class RtspStatusCode(code: Int) extends AnyVal
+case class RtspStatusCode(name: String, code: Int) {
+  override def toString: String = s"${getClass.getSimpleName.split('$').head}($code)"
+}
 
 object RtspStatusCode {
-  val continue = RtspStatusCode(100)
-  val ok = RtspStatusCode(200)
-  val created = RtspStatusCode(201)
-  val lowOnStorageSpace = RtspStatusCode(250)
-  val multipleChoices = RtspStatusCode(300)
-  val movedPermanently = RtspStatusCode(301)
-  val movedTemporarily = RtspStatusCode(302)
-  val seeOther = RtspStatusCode(303)
-  val notModified = RtspStatusCode(304)
-  val useProxy = RtspStatusCode(305)
-  val badRequest = RtspStatusCode(400)
-  val unauthorized = RtspStatusCode(401)
-  val paymentRequired = RtspStatusCode(402)
-  val forbidden = RtspStatusCode(403)
-  val notFound = RtspStatusCode(404)
-  val methodNotAllowed = RtspStatusCode(405)
-  val notAcceptable = RtspStatusCode(406)
-  val proxyAuthenticationRequired = RtspStatusCode(407)
-  val requestTimeout = RtspStatusCode(408)
-  val gone = RtspStatusCode(410)
-  val lengthRequired = RtspStatusCode(411)
-  val preconditionFailed = RtspStatusCode(412)
-  val requestEntityTooLarge = RtspStatusCode(413)
-  val requestUriTooLarge = RtspStatusCode(414)
-  val unsupportedMediaType = RtspStatusCode(415)
-  val parameterNotUnderstood = RtspStatusCode(451)
-  val conferenceNotFound = RtspStatusCode(452)
-  val notEnoughBandwidth = RtspStatusCode(453)
-  val sessionNotFound = RtspStatusCode(454)
-  val methodNotValidInThisState = RtspStatusCode(455)
-  val headerFieldNotValidForThisResource = RtspStatusCode(456)
-  val invalidRange = RtspStatusCode(457)
-  val parameterIsReadOnly = RtspStatusCode(458)
-  val aggregateOperationNotAllowed = RtspStatusCode(459)
-  val onlyAggregateOperationAllowed = RtspStatusCode(460)
-  val unsupportedTransport = RtspStatusCode(461)
-  val destinationUnreachable = RtspStatusCode(462)
-  val internalServerError = RtspStatusCode(500)
-  val notImplemented = RtspStatusCode(501)
-  val badGateway = RtspStatusCode(502)
-  val serviceUnavailable = RtspStatusCode(503)
-  val gatewayTimeout = RtspStatusCode(504)
-  val rtspVersionNotSupported = RtspStatusCode(505)
-  val optionNotSupported = RtspStatusCode(551)
+  object Continue extends RtspStatusCode("Continue", 100)
+  object Ok extends RtspStatusCode("OK", 200)
+  object Created extends RtspStatusCode("Created", 201)
+  object LowOnStorageSpace extends RtspStatusCode("Low on Storage Space", 250)
+  object MultipleChoices extends RtspStatusCode("Multiple Choices", 300)
+  object MovedPermanently extends RtspStatusCode("Moved Permanently", 301)
+  object MovedTemporarily extends RtspStatusCode("Moved Temporarily", 302)
+  object SeeOther extends RtspStatusCode("See Other", 303)
+  object NotModified extends RtspStatusCode("Not Modified", 304)
+  object UseProxy extends RtspStatusCode("Use Proxy", 305)
+  object BadRequest extends RtspStatusCode("Bad Request", 400)
+  object Unauthorized extends RtspStatusCode("Unauthorized", 401)
+  object PaymentRequired extends RtspStatusCode("Payment Required", 402)
+  object Forbidden extends RtspStatusCode("Forbidden", 403)
+  object NotFound extends RtspStatusCode("Not Found", 404)
+  object MethodNotAllowed extends RtspStatusCode("Method Not Allowed", 405)
+  object NotAcceptable extends RtspStatusCode("Not Acceptable", 406)
+  object ProxyAuthenticationRequired extends RtspStatusCode("Proxy Authentication Required", 407)
+  object RequestTimeout extends RtspStatusCode("Request Time-out", 408)
+  object Gone extends RtspStatusCode("Gone", 410)
+  object LengthRequired extends RtspStatusCode("Length Required", 411)
+  object PreconditionFailed extends RtspStatusCode("Precondition Failed", 412)
+  object RequestEntityTooLarge extends RtspStatusCode("Request Entity Too Large", 413)
+  object RequestUriTooLarge extends RtspStatusCode("Request-URI Too Large", 414)
+  object UnsupportedMediaType extends RtspStatusCode("Unsupported Media Type", 415)
+  object ParameterNotUnderstood extends RtspStatusCode("Parameter Not Understood", 451)
+  object ConferenceNotFound extends RtspStatusCode("Conference Not Found", 452)
+  object NotEnoughBandwidth extends RtspStatusCode("Not Enough Bandwidth", 453)
+  object SessionNotFound extends RtspStatusCode("Session Not Found", 454)
+  object MethodNotValidInThisState extends RtspStatusCode("Method Not Valid in This State", 455)
+  object HeaderFieldNotValidForThisResource extends RtspStatusCode("Header Field Not Valid for Resource", 456)
+  object InvalidRange extends RtspStatusCode("Invalid Range", 457)
+  object ParameterIsReadOnly extends RtspStatusCode("Parameter Is Read-Only", 458)
+  object AggregateOperationNotAllowed extends RtspStatusCode("Aggregate operation not allowed", 459)
+  object OnlyAggregateOperationAllowed extends RtspStatusCode("Only aggregate operation allowed", 460)
+  object UnsupportedTransport extends RtspStatusCode("Unsupported transport", 461)
+  object DestinationUnreachable extends RtspStatusCode("Destination unreachable", 462)
+  object InternalServerError extends RtspStatusCode("Internal Server Error", 500)
+  object NotImplemented extends RtspStatusCode("Not Implemented", 501)
+  object BadGateway extends RtspStatusCode("Bad Gateway", 502)
+  object ServiceUnavailable extends RtspStatusCode("Service Unavailable", 503)
+  object GatewayTimeout extends RtspStatusCode("Gateway Time-out", 504)
+  object RtspVersionNotSupported extends RtspStatusCode("RTSP Version not supported", 505)
+  object OptionNotSupported extends RtspStatusCode("Option not supported", 551)
 
-  def values = List(
-    continue,
-    ok,
-    created,
-    lowOnStorageSpace,
-    multipleChoices,
-    movedPermanently,
-    movedTemporarily,
-    seeOther,
-    notModified,
-    useProxy,
-    badRequest,
-    unauthorized,
-    paymentRequired,
-    forbidden,
-    notFound,
-    methodNotAllowed,
-    notAcceptable,
-    proxyAuthenticationRequired,
-    requestTimeout,
-    gone,
-    lengthRequired,
-    preconditionFailed,
-    requestEntityTooLarge,
-    requestUriTooLarge,
-    unsupportedMediaType,
-    parameterNotUnderstood,
-    conferenceNotFound,
-    notEnoughBandwidth,
-    sessionNotFound,
-    methodNotValidInThisState,
-    headerFieldNotValidForThisResource,
-    invalidRange,
-    parameterIsReadOnly,
-    aggregateOperationNotAllowed,
-    onlyAggregateOperationAllowed,
-    unsupportedTransport,
-    destinationUnreachable,
-    internalServerError,
-    notImplemented,
-    badGateway,
-    serviceUnavailable,
-    gatewayTimeout,
-    rtspVersionNotSupported,
-    optionNotSupported
+  lazy val values = List(
+    Continue,
+    Ok,
+    Created,
+    LowOnStorageSpace,
+    MultipleChoices,
+    MovedPermanently,
+    MovedTemporarily,
+    SeeOther,
+    NotModified,
+    UseProxy,
+    BadRequest,
+    Unauthorized,
+    PaymentRequired,
+    Forbidden,
+    NotFound,
+    MethodNotAllowed,
+    NotAcceptable,
+    ProxyAuthenticationRequired,
+    RequestTimeout,
+    Gone,
+    LengthRequired,
+    PreconditionFailed,
+    RequestEntityTooLarge,
+    RequestUriTooLarge,
+    UnsupportedMediaType,
+    ParameterNotUnderstood,
+    ConferenceNotFound,
+    NotEnoughBandwidth,
+    SessionNotFound,
+    MethodNotValidInThisState,
+    HeaderFieldNotValidForThisResource,
+    InvalidRange,
+    ParameterIsReadOnly,
+    AggregateOperationNotAllowed,
+    OnlyAggregateOperationAllowed,
+    UnsupportedTransport,
+    DestinationUnreachable,
+    InternalServerError,
+    NotImplemented,
+    BadGateway,
+    ServiceUnavailable,
+    GatewayTimeout,
+    RtspVersionNotSupported,
+    OptionNotSupported
   )
 
   lazy val valuesMap: Map[Int, RtspStatusCode] = values.map(e => (e.code, e)).toMap

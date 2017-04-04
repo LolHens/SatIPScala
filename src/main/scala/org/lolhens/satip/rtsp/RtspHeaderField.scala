@@ -5,23 +5,48 @@ import org.lolhens.satip.rtsp.RtspMethod._
 /**
   * Created by pierr on 13.11.2016.
   */
-case class RtspHeaderField(name: String, methods: List[RtspMethod]) {
-  case class Value(value: String) {
-    val headerField = RtspHeaderField.this
+abstract case class RtspHeaderField[T](name: String)
+                                      (private[rtsp] val supportedMethods: List[RtspMethod]) {
+
+  override def productPrefix: String = getClass.getSimpleName.split('$').head
+
+  abstract class Value(val value: T) {
+    def headerField: RtspHeaderField[T] = RtspHeaderField.this
+
+    def string: String
+
+    override def toString: String = s"${headerField.productPrefix}.Value($value)"
+
+    override def hashCode(): Int = string.hashCode
+
+    override def equals(obj: Any): Boolean = string.equals(obj)
   }
 
-  def apply(value: String): Value = Value(value)
+  def Value(value: T): Value
+
+  def apply(string: String): Value
 }
 
 object RtspHeaderField {
 
-  trait RequestField extends RtspHeaderField
+  class StringHeaderField(name: String)
+                         (supportedMethods: List[RtspMethod])
+    extends RtspHeaderField[String](name)(supportedMethods) {
 
-  trait ResponseField extends RtspHeaderField
+    class Value(val string: String) extends super.Value(string)
+
+    override def Value(value: String): Value = new Value(value)
+
+    override def apply(string: String): Value = Value(string)
+  }
+
+  trait RequestField extends StringHeaderField
+
+  trait ResponseField extends StringHeaderField
 
   trait GeneralField extends RequestField with ResponseField
 
-  trait EntityField extends RtspHeaderField
+  trait EntityField extends StringHeaderField
 
   private val all = RtspMethod.values
 
@@ -29,47 +54,85 @@ object RtspHeaderField {
 
   private val entity = List(Describe, GetParameter)
 
-  val Accept = new RtspHeaderField("Accept", entity) with RequestField
-  val AcceptEncoding = new RtspHeaderField("Accept-Encoding", entity) with RequestField
-  val AcceptLanguage = new RtspHeaderField("Accept-Language", all) with RequestField
-  val Allow = new RtspHeaderField("Allow", all) with ResponseField
-  val Authorization = new RtspHeaderField("Authorization", all) with RequestField
-  val Bandwidth = new RtspHeaderField("Bandwidth", all) with RequestField
-  val Blocksize = new RtspHeaderField("Blocksize", except(List(Options, Teardown))) with RequestField
-  val CacheControl = new RtspHeaderField("Cache-Control", List(Setup)) with GeneralField
-  val Conference = new RtspHeaderField("Conference", List(Setup)) with RequestField
-  val Connection = new RtspHeaderField("Connection", all) with GeneralField
-  val ContentBase = new RtspHeaderField("Content-Base", entity) with EntityField
-  val ContentEncoding = new RtspHeaderField("Content-Encoding", List(SetParameter, Describe, Announce)) with EntityField
-  val ContentLanguage = new RtspHeaderField("Content-Language", List(Describe, Announce)) with EntityField
-  val ContentLength = new RtspHeaderField("Content-Length", List(SetParameter, Announce) ++ entity) with EntityField
-  val ContentLocation = new RtspHeaderField("Content-Location", entity) with EntityField
-  val ContentType = new RtspHeaderField("Content-Type", List(SetParameter, Announce) ++ entity) with EntityField with ResponseField
-  val CSeq = new RtspHeaderField("CSeq", all) with GeneralField
-  val Date = new RtspHeaderField("Date", all) with GeneralField
-  val Expires = new RtspHeaderField("Expires", List(Describe, Announce)) with EntityField
-  val From = new RtspHeaderField("From", all) with RequestField
-  val IfModifiedSince = new RtspHeaderField("If-Modified-Since", List(Describe, Setup)) with RequestField
-  val LastModified = new RtspHeaderField("Last-Modified", entity) with EntityField
-  // val ProxyAuthenticate = new RtspHeaderField("Proxy-Authenticate")
-  val ProxyRequire = new RtspHeaderField("Proxy-Require", all) with RequestField
-  val Public = new RtspHeaderField("Public", all) with ResponseField
-  val Range = new RtspHeaderField("Range", List(Play, Pause, Record)) with RequestField with ResponseField
-  val Referer = new RtspHeaderField("Referer", all) with RequestField
-  val Require = new RtspHeaderField("Require", all) with RequestField
-  val RetryAfter = new RtspHeaderField("Retry-After", all) with ResponseField
-  val RTPInfo = new RtspHeaderField("RTP-Info", List(Play)) with ResponseField
-  val Scale = new RtspHeaderField("Scale", List(Play, Record)) with RequestField with ResponseField
-  val Session = new RtspHeaderField("Session", except(List(Setup, Options))) with RequestField with ResponseField
-  val Server = new RtspHeaderField("Server", all) with ResponseField
-  val Speed = new RtspHeaderField("Speed", List(Play)) with RequestField with ResponseField
-  val Transport = new RtspHeaderField("Transport", List(Setup)) with RequestField with ResponseField
-  val Unsupported = new RtspHeaderField("Unsupported", all) with ResponseField
-  val UserAgent = new RtspHeaderField("User-Agent", all) with RequestField
-  val Via = new RtspHeaderField("Via", all) with GeneralField
-  val WWWAuthenticate = new RtspHeaderField("WWW-Authenticate", all) with ResponseField
+  object Accept extends StringHeaderField("Accept")(entity) with RequestField
 
-  val values: List[RtspHeaderField] = List(
+  object AcceptEncoding extends StringHeaderField("Accept-Encoding")(entity) with RequestField
+
+  object AcceptLanguage extends StringHeaderField("Accept-Language")(all) with RequestField
+
+  object Allow extends StringHeaderField("Allow")(all) with ResponseField
+
+  object Authorization extends StringHeaderField("Authorization")(all) with RequestField
+
+  object Bandwidth extends StringHeaderField("Bandwidth")(all) with RequestField
+
+  object Blocksize extends StringHeaderField("Blocksize")(except(List(Options, Teardown))) with RequestField
+
+  object CacheControl extends StringHeaderField("Cache-Control")(List(Setup)) with GeneralField
+
+  object Conference extends StringHeaderField("Conference")(List(Setup)) with RequestField
+
+  object Connection extends StringHeaderField("Connection")(all) with GeneralField
+
+  object ContentBase extends StringHeaderField("Content-Base")(entity) with EntityField
+
+  object ContentEncoding extends StringHeaderField("Content-Encoding")(List(SetParameter, Describe, Announce)) with EntityField
+
+  object ContentLanguage extends StringHeaderField("Content-Language")(List(Describe, Announce)) with EntityField
+
+  object ContentLength extends StringHeaderField("Content-Length")(List(SetParameter, Announce) ++ entity) with EntityField
+
+  object ContentLocation extends StringHeaderField("Content-Location")(entity) with EntityField
+
+  object ContentType extends StringHeaderField("Content-Type")(List(SetParameter, Announce) ++ entity) with EntityField with ResponseField
+
+  object CSeq extends StringHeaderField("CSeq")(all) with GeneralField
+
+  object Date extends StringHeaderField("Date")(all) with GeneralField
+
+  object Expires extends StringHeaderField("Expires")(List(Describe, Announce)) with EntityField
+
+  object From extends StringHeaderField("From")(all) with RequestField
+
+  object IfModifiedSince extends StringHeaderField("If-Modified-Since")(List(Describe, Setup)) with RequestField
+
+  object LastModified extends StringHeaderField("Last-Modified")(entity) with EntityField
+
+  object ProxyAuthenticate extends StringHeaderField("Proxy-Authenticate")(all)
+
+  object ProxyRequire extends StringHeaderField("Proxy-Require")(all) with RequestField
+
+  object Public extends StringHeaderField("Public")(all) with ResponseField
+
+  object Range extends StringHeaderField("Range")(List(Play, Pause, Record)) with RequestField with ResponseField
+
+  object Referer extends StringHeaderField("Referer")(all) with RequestField
+
+  object Require extends StringHeaderField("Require")(all) with RequestField
+
+  object RetryAfter extends StringHeaderField("Retry-After")(all) with ResponseField
+
+  object RTPInfo extends StringHeaderField("RTP-Info")(List(Play)) with ResponseField
+
+  object Scale extends StringHeaderField("Scale")(List(Play, Record)) with RequestField with ResponseField
+
+  object Session extends StringHeaderField("Session")(except(List(Setup, Options))) with RequestField with ResponseField
+
+  object Server extends StringHeaderField("Server")(all) with ResponseField
+
+  object Speed extends StringHeaderField("Speed")(List(Play)) with RequestField with ResponseField
+
+  object Transport extends StringHeaderField("Transport")(List(Setup)) with RequestField with ResponseField
+
+  object Unsupported extends StringHeaderField("Unsupported")(all) with ResponseField
+
+  object UserAgent extends StringHeaderField("User-Agent")(all) with RequestField
+
+  object Via extends StringHeaderField("Via")(all) with GeneralField
+
+  object WWWAuthenticate extends StringHeaderField("WWW-Authenticate")(all) with ResponseField
+
+  lazy val values: List[RtspHeaderField[_]] = List(
     Accept,
     AcceptEncoding,
     AcceptLanguage,
@@ -92,6 +155,7 @@ object RtspHeaderField {
     From,
     IfModifiedSince,
     LastModified,
+    ProxyAuthenticate,
     ProxyRequire,
     Public,
     Range,
@@ -110,5 +174,5 @@ object RtspHeaderField {
     WWWAuthenticate
   )
 
-  lazy val valuesMap: Map[String, RtspHeaderField] = values.map(e => e.name -> e).toMap
+  lazy val valuesMap: Map[String, RtspHeaderField[_]] = values.map(e => e.name -> e).toMap
 }

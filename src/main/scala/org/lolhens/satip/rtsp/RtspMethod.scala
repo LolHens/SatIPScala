@@ -5,6 +5,9 @@ package org.lolhens.satip.rtsp
   */
 case class RtspMethod(name: String) {
   override def toString: String = name
+
+  lazy val supportedHeaderFields: List[RtspHeaderField[_]] =
+    RtspHeaderField.values.filter(_.supportedMethods.contains(this))
 }
 
 object RtspMethod {
@@ -20,7 +23,7 @@ object RtspMethod {
   val SetParameter = RtspMethod("SET_PARAMETER")
   val Redirect = RtspMethod("REDIRECT")
 
-  def values = List(
+  lazy val values = List(
     Options,
     Describe,
     Setup,

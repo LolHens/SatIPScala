@@ -1,10 +1,13 @@
 package org.lolhens.satip.rtsp
 
+import java.net.InetSocketAddress
+
 import akka.actor.{Actor, ActorRef, ActorRefFactory, Props, Stash}
 import akka.pattern.ask
 import akka.util.Timeout
-import org.lolhens.satip.rtsp.RtspActor._
-import org.lolhens.satip.rtsp.RtspRequestActor.KeepAlive
+import org.lolhens.satip.rtsp.Rtsp._
+import org.lolhens.satip.rtsp.RtspManager._
+import org.lolhens.satip.rtsp.RtspConnection.KeepAlive
 import org.lolhens.satip.rtsp.data.RtspVersion
 import org.lolhens.satip.util.ContextScheduler
 
@@ -14,15 +17,17 @@ import scala.language.postfixOps
 /**
   * Created by pierr on 03.04.2017.
   */
-class RtspRequestActor(connectionActor: ActorRef) extends Actor with Stash with ContextScheduler {
-  connectionActor ! RtspConnectionActor.Register(self)
+private[rtsp] class RtspConnection(tcpConnection: ActorRef, remoteAddress: InetSocketAddress) extends Actor with Stash with ContextScheduler {
+  val outgoingConnection: ActorRef = RtspOutgoingConnection.actor(tcpConnection)
+
+  outgoingConnection ! RtspOutgoingConnection.Register(self)
 
   context.schedule(0 seconds, 5 seconds, KeepAlive)
 
   override def receive: Receive = {
     case request: RtspRequest =>
       val listener = sender()
-      connectionActor ! Write(request)
+      outgoingConnection ! Write(request)
 
       context become {
         case Ack =>
@@ -81,12 +86,12 @@ class RtspRequestActor(connectionActor: ActorRef) extends Actor with Stash with 
   }
 }
 
-object RtspRequestActor {
-  def props(connectionActor: ActorRef): Props =
-    Props(new RtspRequestActor(connectionActor))
+object RtspConnection {
+  private[rtsp] def props(tcpConnection: ActorRef, remoteAddress: InetSocketAddress): Props =
+    Props(new RtspConnection(tcpConnection, remoteAddress))
 
-  def actor(connectionActor: ActorRef)(implicit actorRefFactory: ActorRefFactory): ActorRef =
-    actorRefFactory.actorOf(props(connectionActor), "RtspRequester")
+  private[rtsp] def actor(tcpConnection: ActorRef, remoteAddress: InetSocketAddress)(implicit actorRefFactory: ActorRefFactory): ActorRef =
+    actorRefFactory.actorOf(props(tcpConnection, remoteAddress), "RTSP-Connection")
 
   private case object KeepAlive extends Event
 

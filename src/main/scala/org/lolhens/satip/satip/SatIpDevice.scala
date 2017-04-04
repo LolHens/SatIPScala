@@ -46,7 +46,7 @@ class SatIpDevice(val baseUrl: String,
           Await.result(responseFuture.map { response =>
             println(response)
             response.statusCode match {
-              case RtspStatusCode.ok =>
+              case RtspStatusCode.Ok =>
                 val frontEndInfo =
                   response.entity.map(_.body)
                     .flatMap(body => responseBodyParser.parse(body).tried.toOption.flatten)
@@ -65,7 +65,7 @@ class SatIpDevice(val baseUrl: String,
                     ???
                 }
 
-              case RtspStatusCode.notFound =>
+              case RtspStatusCode.NotFound =>
               // the Sat>Ip server has no active stream
 
               case _ =>
