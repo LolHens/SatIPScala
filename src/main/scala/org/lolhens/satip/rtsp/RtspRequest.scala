@@ -28,35 +28,35 @@ case class RtspRequest(method: RtspMethod,
 
 object RtspRequest {
   def options(uri: String, cSeq: Int, requestHeaders: List[RtspHeaderField.RequestField#Value] = Nil)(implicit version: RtspVersion): RtspRequest =
-    RtspRequest(RtspMethod.Options, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
+    RtspRequest(RtspMethod.Options, uri, List(RtspHeaderField.CSeq(cSeq)) ++ requestHeaders)
 
   def describe(uri: String, cSeq: Int, requestHeaders: List[RtspHeaderField.RequestField#Value] = Nil, entity: RtspEntity)(implicit version: RtspVersion): RtspRequest =
-    RtspRequest(RtspMethod.Describe, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders, Some(entity))
+    RtspRequest(RtspMethod.Describe, uri, List(RtspHeaderField.CSeq(cSeq)) ++ requestHeaders, Some(entity))
 
   def setup(uri: String, cSeq: Int, requestHeaders: List[RtspHeaderField.RequestField#Value] = Nil)(implicit version: RtspVersion): RtspRequest =
-    RtspRequest(RtspMethod.Setup, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
+    RtspRequest(RtspMethod.Setup, uri, List(RtspHeaderField.CSeq(cSeq)) ++ requestHeaders)
 
   def play(uri: String, cSeq: Int, requestHeaders: List[RtspHeaderField.RequestField#Value] = Nil)(implicit version: RtspVersion): RtspRequest =
-    RtspRequest(RtspMethod.Play, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
+    RtspRequest(RtspMethod.Play, uri, List(RtspHeaderField.CSeq(cSeq)) ++ requestHeaders)
 
   def pause(uri: String, cSeq: Int, requestHeaders: List[RtspHeaderField.RequestField#Value] = Nil)(implicit version: RtspVersion): RtspRequest =
-    RtspRequest(RtspMethod.Pause, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
+    RtspRequest(RtspMethod.Pause, uri, List(RtspHeaderField.CSeq(cSeq)) ++ requestHeaders)
 
   def record(uri: String, cSeq: Int, requestHeaders: List[RtspHeaderField.RequestField#Value] = Nil)(implicit version: RtspVersion): RtspRequest =
-    RtspRequest(RtspMethod.Record, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
+    RtspRequest(RtspMethod.Record, uri, List(RtspHeaderField.CSeq(cSeq)) ++ requestHeaders)
 
   def announce(uri: String, cSeq: Int, requestHeaders: List[RtspHeaderField.RequestField#Value] = Nil)(implicit version: RtspVersion): RtspRequest =
-    RtspRequest(RtspMethod.Announce, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
+    RtspRequest(RtspMethod.Announce, uri, List(RtspHeaderField.CSeq(cSeq)) ++ requestHeaders)
 
   def teardown(uri: String, cSeq: Int, requestHeaders: List[RtspHeaderField.RequestField#Value] = Nil)(implicit version: RtspVersion): RtspRequest =
-    RtspRequest(RtspMethod.Teardown, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
+    RtspRequest(RtspMethod.Teardown, uri, List(RtspHeaderField.CSeq(cSeq)) ++ requestHeaders)
 
   def getParameter(uri: String, cSeq: Int, requestHeaders: List[RtspHeaderField.RequestField#Value] = Nil, entity: RtspEntity)(implicit version: RtspVersion): RtspRequest =
-    RtspRequest(RtspMethod.GetParameter, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders, Some(entity))
+    RtspRequest(RtspMethod.GetParameter, uri, List(RtspHeaderField.CSeq(cSeq)) ++ requestHeaders, Some(entity))
 
   def setParameter(uri: String, cSeq: Int, requestHeaders: List[RtspHeaderField.RequestField#Value] = Nil)(implicit version: RtspVersion): RtspRequest =
-    RtspRequest(RtspMethod.SetParameter, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
+    RtspRequest(RtspMethod.SetParameter, uri, List(RtspHeaderField.CSeq(cSeq)) ++ requestHeaders)
 
   def redirect(uri: String, cSeq: Int, requestHeaders: List[RtspHeaderField.RequestField#Value] = Nil)(implicit version: RtspVersion): RtspRequest =
-    RtspRequest(RtspMethod.Redirect, uri, List(RtspHeaderField.CSeq(cSeq.toString)) ++ requestHeaders)
+    RtspRequest(RtspMethod.Redirect, uri, List(RtspHeaderField.CSeq(cSeq)) ++ requestHeaders)
 }

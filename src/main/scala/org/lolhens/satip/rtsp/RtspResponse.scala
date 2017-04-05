@@ -19,21 +19,21 @@ case class RtspResponse(rtspVersion: RtspVersion,
 object RtspResponse {
   private val responseParser =
     (Start ~ "RTSP/" ~ RtspVersion.parser ~ s1 ~ RtspStatusCode.parser ~ s1 ~
-      (!("." | "\r\n") ~ AnyChar).rep(min = 1).?.! ~ "\r\n" ~
-      ((!":" ~ AnyChar).rep.! ~ ":" ~ (!"\r\n" ~ AnyChar).rep.!.map(_.trim) ~ "\r\n").rep ~ "\r\n" ~
+      (!("." | newline) ~ AnyChar).rep(min = 1).?.! ~ newline ~
+      ((!":" ~ AnyChar).rep.! ~ ":" ~ (!newline ~ AnyChar).rep.!.map(_.trim) ~ newline).rep ~ newline ~
       AnyChar.rep.! ~ End).map {
       case (version, statusCode, reason, headers, body) =>
         RtspResponse(version, statusCode, reason,
           headers
             .map(header => RtspHeaderField.valuesMap.get(header._1) -> header._2)
             .collect {
-              case (Some(responseHeader: RtspHeaderField.ResponseField), value: String) => responseHeader(value)
+              case (Some(responseHeader: RtspHeaderField.ResponseField), value: String) => responseHeader.Value.fromString(value)
             }
             .toList,
           Some(RtspEntity(headers
             .map(header => RtspHeaderField.valuesMap.get(header._1) -> header._2)
             .collect {
-              case (Some(entityHeader: RtspHeaderField.EntityField), value: String) => entityHeader.apply(value)
+              case (Some(entityHeader: RtspHeaderField.EntityField), value: String) => entityHeader.Value.fromString(value)
             }
             .toList, body)).filterNot(_.isEmpty)
         )

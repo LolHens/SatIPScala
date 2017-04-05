@@ -11,19 +11,21 @@ import scala.util.{Failure, Success, Try}
   */
 object ParserUtils {
   val space = CharPred(char => Pattern.matches("""\s""", s"$char"))
-  val s = P(space.rep)
-  val s1 = P(space.rep(min = 1))
+  val s: Parser[Unit] = space.rep
+  val s1: Parser[Unit] = space.rep(min = 1)
+
+  val newline = StringIn("\r\n", "\n", "\r")
 
   val letter = CharIn(('A' to 'Z') ++ ('a' to 'z'))
-  val letters = letter.rep(min = 1)
+  val letters: Parser[Unit] = letter.rep(min = 1)
 
   val digit = CharIn('0' to '9')
-  val digits = digit.rep(min = 1)
+  val digits: Parser[Unit] = digit.rep(min = 1)
 
   val separator = CharIn(List(',', ';'))
 
   val quote = CharIn(List('\'', '"'))
-  val quoted = P(quote ~ (("\\" ~ quote.!) | (!quote ~ AnyChar).!).rep.map(_.mkString) ~ quote)
+  val quoted: Parser[String] = quote ~ (("\\" ~ quote.!) | (!quote ~ AnyChar).!).rep.map(_.mkString) ~ quote
 
   // TODO: FIX
 

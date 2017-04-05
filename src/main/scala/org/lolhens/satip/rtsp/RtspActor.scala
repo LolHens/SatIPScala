@@ -7,7 +7,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import org.lolhens.satip.rtsp.Rtsp._
 import org.lolhens.satip.rtsp.RtspManager._
-import org.lolhens.satip.rtsp.RtspConnection.KeepAlive
+import org.lolhens.satip.rtsp.RtspActor.KeepAlive
 import org.lolhens.satip.rtsp.data.RtspVersion
 import org.lolhens.satip.util.ContextScheduler
 
@@ -17,7 +17,7 @@ import scala.language.postfixOps
 /**
   * Created by pierr on 03.04.2017.
   */
-private[rtsp] class RtspConnection(tcpConnection: ActorRef, remoteAddress: InetSocketAddress) extends Actor with Stash with ContextScheduler {
+private[rtsp] class RtspActor(tcpConnection: ActorRef, remoteAddress: InetSocketAddress) extends Actor with Stash with ContextScheduler {
   val outgoingConnection: ActorRef = RtspOutgoingConnection.actor(tcpConnection)
 
   outgoingConnection ! RtspOutgoingConnection.Register(self)
@@ -86,12 +86,12 @@ private[rtsp] class RtspConnection(tcpConnection: ActorRef, remoteAddress: InetS
   }
 }
 
-object RtspConnection {
+object RtspActor {
   private[rtsp] def props(tcpConnection: ActorRef, remoteAddress: InetSocketAddress): Props =
-    Props(new RtspConnection(tcpConnection, remoteAddress))
+    Props(new RtspActor(tcpConnection, remoteAddress))
 
   private[rtsp] def actor(tcpConnection: ActorRef, remoteAddress: InetSocketAddress)(implicit actorRefFactory: ActorRefFactory): ActorRef =
-    actorRefFactory.actorOf(props(tcpConnection, remoteAddress), "RTSP-Connection")
+    actorRefFactory.actorOf(props(tcpConnection, remoteAddress), "RTSP-Actor")
 
   private case object KeepAlive extends Event
 

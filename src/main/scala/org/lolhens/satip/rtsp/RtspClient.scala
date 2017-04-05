@@ -27,7 +27,7 @@ class RtspClient(val serverHost: String) {
 
     val bytes = request
       .copy(requestHeaders =
-        request.requestHeaders :+ RtspHeaderField.CSeq(cseq.toString))(request.version)
+        request.requestHeaders :+ RtspHeaderField.CSeq(cseq))(request.version)
       .toByteString
 
     client.getOutputStream.write(bytes.toArray)

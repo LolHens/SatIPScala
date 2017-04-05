@@ -62,7 +62,10 @@ class RtspSession(val rtspDevice: RtspDevice,
     val readBytes = rtspSocket.getInputStream.read(bytes)
     implicit val byteOrder = ByteOrder.BIG_ENDIAN
     val response = RtspResponse.fromByteString(ByteString.fromArray(bytes, 0, readBytes))
-    val contentLength = response.entity.flatMap(_.entityHeaders.find(_.headerField == RtspHeaderField.ContentLength)).map(_.value.toInt)
+    //val contentLength = response.entity.flatMap(_.entityHeaders.find(_.headerField == RtspHeaderField.ContentLength)).map(_.string.toInt)
+    val contentLength: Option[Int] = response.entity.flatMap(_.entityHeaders.collectFirst{
+      case field: RtspHeaderField.ContentLength.Value => field.value
+    })
     println(contentLength)
     contentLength.map { length =>
       val bytes = new Array[Byte](length)
