@@ -3,6 +3,7 @@ package org.lolhens.satip.satip
 import java.util.regex.Pattern
 
 import akka.actor.{Actor, ActorRef, ActorRefFactory, Props}
+import akka.http.scaladsl.model.Uri
 import org.lolhens.satip.rtsp._
 import org.lolhens.satip.rtsp.data.RtspVersion
 import org.lolhens.satip.satip.SatIpDiscoveryActor.CapabilitiesResolved
@@ -47,7 +48,7 @@ class SatIpDiscoveryActor(upnpService: ActorRef) extends Actor {
                 implicit val rtspVersion = RtspVersion(1, 0)
                 val baseurl = "http://10.1.2.5"
 
-                val request = RtspRequest.describe(s"rtsp://${remoteDetails.remoteHost}:554/stream=0", 0, List(
+                val request = RtspRequest.describe(Uri(s"rtsp://${remoteDetails.remoteHost}:554/stream=0"), List(
                   RtspHeaderField.Accept("application/sdp"),
                   RtspHeaderField.Connection("close")
                 ), RtspEntity(Nil, ""))

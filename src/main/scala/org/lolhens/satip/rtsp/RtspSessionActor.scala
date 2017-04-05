@@ -7,7 +7,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import org.lolhens.satip.rtsp.Rtsp._
 import org.lolhens.satip.rtsp.RtspManager._
-import org.lolhens.satip.rtsp.RtspActor.KeepAlive
+import org.lolhens.satip.rtsp.RtspSessionActor.KeepAlive
 import org.lolhens.satip.rtsp.data.RtspVersion
 import org.lolhens.satip.util.ContextScheduler
 
@@ -17,17 +17,24 @@ import scala.language.postfixOps
 /**
   * Created by pierr on 03.04.2017.
   */
-private[rtsp] class RtspActor(tcpConnection: ActorRef, remoteAddress: InetSocketAddress) extends Actor with Stash with ContextScheduler {
+private[rtsp] class RtspSessionActor(tcpConnection: ActorRef, remoteAddress: InetSocketAddress) extends Actor with Stash with ContextScheduler {
   val outgoingConnection: ActorRef = RtspOutgoingConnection.actor(tcpConnection)
 
   outgoingConnection ! RtspOutgoingConnection.Register(self)
 
-  context.schedule(0 seconds, 5 seconds, KeepAlive)
+  /*override def receive: Receive = { // TODO: let connections time out and then open a new one
+    case request: RtspRequest =>
+      val tcpConnection: ActorRef = _
+      val connection = RtspOutgoingConnection.actor(tcpConnection)
+
+
+
+  }*/
 
   override def receive: Receive = {
     case request: RtspRequest =>
       val listener = sender()
-      outgoingConnection ! Write(request)
+      outgoingConnection ! Write(request.copy(requestHeaders =  RtspHeaderField.CSeq(0) +: request.requestHeaders)(request.version))
 
       context become {
         case Ack =>
@@ -67,28 +74,15 @@ private[rtsp] class RtspActor(tcpConnection: ActorRef, remoteAddress: InetSocket
         case _ => stash()
       }
 
-    case KeepAlive =>
-      implicit val rtspVersion = RtspVersion(1, 0)
-      val options = RtspRequest.options(s"rtsp://${"10.1.2.6"}:554/" /*stream=0"*/ , cSeq = 1, List(
-        RtspHeaderField.Accept("application/sdp") //,
-        //RtspHeaderField.Session("0")
-      ))
-
-      println("keep alive")
-
-      implicit val timeout = Timeout(1 second)
-      import context.dispatcher
-      self ? options
-
     case closed: ConnectionClosed =>
       println("Connection closed: " + closed)
       context stop self
   }
 }
 
-object RtspActor {
+object RtspSessionActor {
   private[rtsp] def props(tcpConnection: ActorRef, remoteAddress: InetSocketAddress): Props =
-    Props(new RtspActor(tcpConnection, remoteAddress))
+    Props(new RtspSessionActor(tcpConnection, remoteAddress))
 
   private[rtsp] def actor(tcpConnection: ActorRef, remoteAddress: InetSocketAddress)(implicit actorRefFactory: ActorRefFactory): ActorRef =
     actorRefFactory.actorOf(props(tcpConnection, remoteAddress), "RTSP-Actor")

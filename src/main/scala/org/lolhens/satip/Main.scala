@@ -53,12 +53,12 @@ object Main {
           //connection ! Register(self)
 
           implicit val rtspVersion = RtspVersion(1, 0)
-          val request = RtspRequest.describe(s"rtsp://${"10.1.2.6"}:554/" /*stream=0"*/ , cSeq = 1, List(
+          val request = RtspRequest.describe(s"rtsp://${"10.1.2.6"}:554/" /*stream=0"*/ , List(
             //RtspHeaderField.Accept("application/sdp")//,
             //RtspHeaderField.Session("0")
           ), RtspEntity(Nil, ""))
 
-          val request2 = RtspRequest.options(s"rtsp://${"10.1.2.6"}:554/" /*stream=0"*/ , cSeq = 1, List(
+          val request2 = RtspRequest.options(s"rtsp://${"10.1.2.6"}:554/" /*stream=0"*/ , List(
             RtspHeaderField.Accept("application/sdp") //,
             //RtspHeaderField.Session("0")
           ))

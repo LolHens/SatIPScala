@@ -3,6 +3,7 @@ package org.lolhens.satip.rtsp
 import java.net.Socket
 import java.nio.ByteOrder
 
+import akka.http.scaladsl.model.Uri
 import akka.util.ByteString
 import org.lolhens.satip.rtp.RtpListener.TransmissionMode
 import org.lolhens.satip.rtp.RtpListener.TransmissionMode.{Multicast, Unicast}
@@ -91,7 +92,7 @@ class RtspSession(val rtspDevice: RtspDevice,
         List(RtspHeaderField.Transport(s"RTP/AVP;${transmissionMode.name};client_port=$clientRtpPort-$clientRtcpPort"))
     }
 
-    val request: RtspRequest = RtspRequest.setup(s"rtsp://${rtspDevice.serverAddress}:${554}/?$query", cSeq = 1, headers)
+    val request: RtspRequest = RtspRequest.setup(Uri(s"rtsp://${rtspDevice.serverAddress}:${554}/?$query"), headers)
     sendRequest(request)
     receiveResponse
   }
@@ -106,7 +107,7 @@ class RtspSession(val rtspDevice: RtspDevice,
 
   def describe() = {
     //rtspSocket = new Socket("192.168.1.6", 554)
-    val request = RtspRequest.describe(s"rtsp://${rtspDevice.serverAddress}:554/"/*stream=0"*/, cSeq = 1, List(
+    val request = RtspRequest.describe(Uri(s"rtsp://${rtspDevice.serverAddress}:554/")/*stream=0"*/, List(
       //RtspHeaderField.Accept("application/sdp")//,
       //RtspHeaderField.Session("0")
     ), RtspEntity(Nil, ""))
@@ -117,7 +118,7 @@ class RtspSession(val rtspDevice: RtspDevice,
 
   def options() = {
     //rtspSocket = new Socket("192.168.1.6", 554)
-    val request = RtspRequest.options(s"rtsp://${rtspDevice.serverAddress}:554/"/*stream=0"*/, cSeq = 1, List(
+    val request = RtspRequest.options(Uri(s"rtsp://${rtspDevice.serverAddress}:554/")/*stream=0"*/, List(
       RtspHeaderField.Accept("application/sdp")//,
       //RtspHeaderField.Session("0")
     ))

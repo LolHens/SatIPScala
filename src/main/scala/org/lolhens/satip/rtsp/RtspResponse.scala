@@ -1,7 +1,5 @@
 package org.lolhens.satip.rtsp
 
-import java.nio.ByteOrder
-
 import akka.util.ByteString
 import fastparse.all._
 import org.lolhens.satip.rtsp.data.RtspVersion
@@ -10,11 +8,11 @@ import org.lolhens.satip.util.ParserUtils._
 /**
   * Created by pierr on 23.10.2016.
   */
-case class RtspResponse(rtspVersion: RtspVersion,
-                        statusCode: RtspStatusCode,
+case class RtspResponse(statusCode: RtspStatusCode,
                         reason: String,
                         headers: List[RtspHeaderField.ResponseField#Value],
-                        entity: Option[RtspEntity])
+                        entity: Option[RtspEntity],
+                        version: RtspVersion)
 
 object RtspResponse {
   private val responseParser =
@@ -22,21 +20,23 @@ object RtspResponse {
       (!("." | newline) ~ AnyChar).rep(min = 1).?.! ~ newline ~
       ((!":" ~ AnyChar).rep.! ~ ":" ~ (!newline ~ AnyChar).rep.!.map(_.trim) ~ newline).rep ~ newline ~
       AnyChar.rep.! ~ End).map {
-      case (version, statusCode, reason, headers, body) =>
-        RtspResponse(version, statusCode, reason,
-          headers
-            .map(header => RtspHeaderField.valuesMap.get(header._1) -> header._2)
-            .collect {
-              case (Some(responseHeader: RtspHeaderField.ResponseField), value: String) => responseHeader.Value.fromString(value)
-            }
-            .toList,
-          Some(RtspEntity(headers
-            .map(header => RtspHeaderField.valuesMap.get(header._1) -> header._2)
-            .collect {
-              case (Some(entityHeader: RtspHeaderField.EntityField), value: String) => entityHeader.Value.fromString(value)
-            }
-            .toList, body)).filterNot(_.isEmpty)
+      case (version, statusCode, reason, headerStrings, body) =>
+        val headers = headerStrings.toList.flatMap(header =>
+          RtspHeaderField.valuesMap.get(header._1).map(_.Value.fromString(header._2))
         )
+
+        val responseHeaders = headers.collect {
+          case responseHeader: RtspHeaderField.ResponseField#Value => responseHeader
+        }
+
+        val entity = Some(RtspEntity(
+          headers.collect {
+            case entityHeader: RtspHeaderField.EntityField#Value => entityHeader
+          },
+          body
+        )).filterNot(_.isEmpty)
+
+        RtspResponse(statusCode, reason, responseHeaders, entity, version)
     }
 
   def fromByteString(byteString: ByteString): RtspResponse = {

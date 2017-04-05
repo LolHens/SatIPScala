@@ -1,5 +1,6 @@
 package org.lolhens.satip.satip
 
+import akka.http.scaladsl.model.Uri
 import fastparse.all._
 import org.fourthline.cling.model.meta.RemoteDevice
 import org.lolhens.satip.rtsp._
@@ -20,8 +21,8 @@ class SatIpDevice(val baseUrl: String,
                   val capabilities: List[Tuner],
                   val hasSatteliteBroadcastSupport: Boolean,
                   val hasCableBroadcastSupport: Boolean,
-                  val hasTerrestrialBroadcastSupport: Boolean /*,
-                  upnpDevice: UpnpDevice = null*/) {
+                  val hasTerrestrialBroadcastSupport: Boolean
+                  /*,upnpDevice: UpnpDevice = null*/) {
   val responseBodyParser: Parser[Option[String]] =
     ("s=SatIPServer:1" ~ s1 ~ (!space ~ AnyChar).rep(min = 1).! ~ s1).?
 
@@ -35,7 +36,7 @@ class SatIpDevice(val baseUrl: String,
         .groupBy(e => e)
         .map(e => (e._1, e._2.length)) match {
         case empty if empty.isEmpty =>
-          val request = RtspRequest.describe(s"rtsp://$baseUrl/", 0, List(
+          val request = RtspRequest.describe(Uri(s"rtsp://$baseUrl/"), List(
             RtspHeaderField.Accept("application/sdp"),
             RtspHeaderField.Connection("close")
           ), RtspEntity(Nil, ""))
