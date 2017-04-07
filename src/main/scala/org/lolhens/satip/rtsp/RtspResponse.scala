@@ -22,7 +22,7 @@ object RtspResponse {
       AnyChar.rep.! ~ End).map {
       case (version, statusCode, reason, headerStrings, body) =>
         val headers = headerStrings.toList.flatMap(header =>
-          RtspHeaderField.valuesMap.get(header._1).map(_.Value.fromString(header._2))
+          {println(RtspHeaderField.valuesMap.get(header._1));RtspHeaderField.valuesMap.get(header._1).map(_.Value.fromString(header._2))}
         )
 
         val responseHeaders = headers.collect {
@@ -31,7 +31,9 @@ object RtspResponse {
 
         val entity = Some(RtspEntity(
           headers.collect {
-            case entityHeader: RtspHeaderField.EntityField#Value => entityHeader
+            case entityHeader: RtspHeaderField.EntityField#Value =>
+              println(entityHeader.getClass)
+              entityHeader
           },
           body
         )).filterNot(_.isEmpty)
