@@ -30,6 +30,7 @@ lazy val settings = Seq(
     "com.lihaoyi" %% "fastparse" % "1.0.0",
     "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
     "org.scodec" %% "scodec-bits" % "1.1.5",
+    "de.lolhens" %% "scalastringutils" % "0.2.0",
     "org.fourthline.cling" % "cling-core" % "2.1.1"
   ),
 
