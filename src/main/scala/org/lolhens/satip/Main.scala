@@ -35,15 +35,15 @@ object Main {
     //rootLogger.setLevel(Level.INFO)
     //testUpnp()
     //RtspSession.test
-    //testUpnp3()
-    testRtsp()
+    testUpnp3()
+    //testRtsp()
   }
 
   def testRtsp() = {
     val actorSystem = ActorSystem()
 
     class RtspListener extends Actor {
-      IO(Rtsp)(actorSystem) ! Connect(new InetSocketAddress("10.1.2.6", 554))
+      IO(Rtsp)(actorSystem) ! Connect(new InetSocketAddress("10.1.15.237", 554))
 
       override def receive: Receive = {
         case Connected(remote, _) =>
@@ -53,17 +53,21 @@ object Main {
           //connection ! Register(self)
 
           implicit val rtspVersion = RtspVersion(1, 0)
-          val request = RtspRequest.describe(s"rtsp://${"10.1.2.6"}:554/" /*stream=0"*/ , List(
+          val request = RtspRequest.describe(s"rtsp://${"10.1.15.237"}:554/" /*stream=0"*/ , List(
             //RtspHeaderField.Accept("application/sdp")//,
             //RtspHeaderField.Session("0")
           ), RtspEntity(Nil, ""))
 
-          val request2 = RtspRequest.options(s"rtsp://${"10.1.2.6"}:554/" /*stream=0"*/ , List(
+          val request2 = RtspRequest.options(s"rtsp://${"10.1.15.237"}:554/" /*stream=0"*/ , List(
             RtspHeaderField.Accept("application/sdp") //,
             //RtspHeaderField.Session("0")
           ))
 
           connection ! request2
+
+          val request3 = RtspRequest.setup(s"rtsp://${"10.1.15.237"}:554/")
+
+          connection ! request3
 
           context.become {
             case msg => println(msg)
