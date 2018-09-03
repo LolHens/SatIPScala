@@ -1,5 +1,7 @@
 package org.lolhens.satip.rtsp
 
+import org.lolhens.satip.rtsp.RtspHeaderField2.EntityField.ContentBase
+
 import scala.util.{Success, Try}
 import scala.util.matching.Regex
 
@@ -11,8 +13,13 @@ case class RtspHeaderField2(name: String, value: String) {
 }
 
 object RtspHeaderField2 {
+  def apply[F <: Factory](factory: F): F = factory
 
-  abstract class Factory[T](name: String) {
+
+
+  RtspHeaderField2(ContentBase)("test")
+
+  abstract class Factory(name: String) {
     def parse(value: String): Try[T]
   }
 
@@ -22,7 +29,7 @@ object RtspHeaderField2 {
 
     class ContentBase(value: String) extends RtspHeaderField2("Content-Base", value) with EntityField
 
-    object ContentBase extends Factory[ContentBase]("Content-Base") {
+    object ContentBase extends Factory("Content-Base") {
       def apply(value: String) = new ContentBase(value)
 
       override def parse(value: String): Try[ContentBase] = Success(ContentBase(value))
