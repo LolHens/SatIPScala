@@ -1,7 +1,7 @@
 package org.lolhens.satip.upnp
 
-import org.fourthline.cling.model.meta.{LocalService, RemoteService, StateVariable, Action => ClingAction}
-import org.fourthline.cling.model.types.{ServiceId, ServiceType}
+import org.jupnp.model.meta.{LocalService, RemoteService, StateVariable, Action => ClingAction}
+import org.jupnp.model.types.{ServiceId, ServiceType}
 import org.lolhens.satip.upnp.Service.{Action, Variable}
 
 /**

@@ -4,18 +4,17 @@ import java.net.InetSocketAddress
 
 import akka.actor.{Actor, ActorSystem, Props}
 import akka.io.IO
-import org.fourthline.cling.model.message.header.STAllHeader
-import org.fourthline.cling.model.meta.RemoteDevice
-import org.fourthline.cling.model.types.DeviceType
-import org.fourthline.cling.registry.{DefaultRegistryListener, Registry, RegistryListener}
-import org.fourthline.cling.{UpnpService, UpnpServiceImpl}
+import org.jupnp.model.message.header.STAllHeader
+import org.jupnp.model.meta.RemoteDevice
+import org.jupnp.model.types.DeviceType
+import org.jupnp.registry.{DefaultRegistryListener, Registry, RegistryListener}
+import org.jupnp.{UpnpService, UpnpServiceImpl}
 import org.lolhens.satip.rtsp.Rtsp.{Connect, Connected}
 import org.lolhens.satip.rtsp._
 import org.lolhens.satip.rtsp.data.RtspVersion
 import org.lolhens.satip.satip.SatIpDiscoveryActor
 import org.lolhens.satip.upnp.UpnpServiceActor
 import org.lolhens.satip.upnp.UpnpServiceActor.DeviceUpdated
-import org.seamless.util.logging.LoggingUtil
 import org.slf4j.bridge.SLF4JBridgeHandler
 
 import scala.xml.XML
@@ -29,7 +28,7 @@ object Main {
     implicit val byteOrder = ByteOrder.BIG_ENDIAN
     builder.putInt(16734)
     println(builder.result().toInt)*/
-    LoggingUtil.resetRootHandler(new SLF4JBridgeHandler())
+    //LoggingUtil.resetRootHandler(new SLF4JBridgeHandler())
 
     //val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).asInstanceOf[Logger]
     //rootLogger.setLevel(Level.INFO)

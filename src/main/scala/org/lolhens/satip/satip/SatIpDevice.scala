@@ -2,7 +2,7 @@ package org.lolhens.satip.satip
 
 import akka.http.scaladsl.model.Uri
 import fastparse.all._
-import org.fourthline.cling.model.meta.RemoteDevice
+import org.jupnp.model.meta.RemoteDevice
 import org.lolhens.satip.rtsp._
 import org.lolhens.satip.rtsp.data.RtspVersion
 import org.lolhens.satip.util.ParserUtils._

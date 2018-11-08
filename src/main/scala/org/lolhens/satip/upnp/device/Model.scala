@@ -2,7 +2,7 @@ package org.lolhens.satip.upnp.device
 
 import java.net.URI
 
-import org.fourthline.cling.model.meta.ModelDetails
+import org.jupnp.model.meta.ModelDetails
 
 /**
   * Created by u016595 on 23.03.2017.

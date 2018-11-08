@@ -2,8 +2,8 @@ package org.lolhens.satip.upnp.device
 
 import java.net.{URI, URL}
 
-import org.fourthline.cling.model.meta._
-import org.fourthline.cling.model.types.DLNADoc
+import org.jupnp.model.meta._
+import org.jupnp.model.types.DLNADoc
 import org.lolhens.satip.upnp.{Icon, Service}
 
 /**

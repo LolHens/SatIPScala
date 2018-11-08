@@ -2,10 +2,10 @@ package org.lolhens.satip.upnp
 
 import akka.actor.{Actor, ActorRef, ActorRefFactory, Props, Terminated}
 import akka.routing.{BroadcastRoutingLogic, Router}
-import org.fourthline.cling.UpnpServiceImpl
-import org.fourthline.cling.model.message.header.STAllHeader
-import org.fourthline.cling.model.meta.{LocalDevice, RemoteDevice}
-import org.fourthline.cling.registry.{DefaultRegistryListener, Registry}
+import org.jupnp.UpnpServiceImpl
+import org.jupnp.model.message.header.STAllHeader
+import org.jupnp.model.meta.{LocalDevice, RemoteDevice}
+import org.jupnp.registry.{DefaultRegistryListener, Registry}
 import org.lolhens.satip.upnp.UpnpServiceActor._
 import org.lolhens.satip.upnp.device.UpnpDevice
 
@@ -15,22 +15,28 @@ import org.lolhens.satip.upnp.device.UpnpDevice
 class UpnpServiceActor extends Actor {
   var eventRouter = Router(BroadcastRoutingLogic())
 
-  val upnpService = new UpnpServiceImpl(new DefaultRegistryListener {
-    override def localDeviceAdded(registry: Registry, localDevice: LocalDevice): Unit =
-      self ! DeviceAdded(registry, UpnpDevice(localDevice))
+  val upnpService = {
+    val service = new UpnpServiceImpl()
+    service.getRegistry.addListener(new DefaultRegistryListener {
+      override def localDeviceAdded(registry: Registry, localDevice: LocalDevice): Unit =
+        self ! DeviceAdded(registry, UpnpDevice(localDevice))
 
-    override def localDeviceRemoved(registry: Registry, localDevice: LocalDevice): Unit =
-      self ! DeviceRemoved(registry, UpnpDevice(localDevice))
+      override def localDeviceRemoved(registry: Registry, localDevice: LocalDevice): Unit =
+        self ! DeviceRemoved(registry, UpnpDevice(localDevice))
 
-    override def remoteDeviceAdded(registry: Registry, remoteDevice: RemoteDevice): Unit = {println(remoteDevice.getIdentity().getDescriptorURL + " " + remoteDevice.getDetails().getBaseURL)
-      self ! DeviceAdded(registry, UpnpDevice(remoteDevice))}
+      override def remoteDeviceAdded(registry: Registry, remoteDevice: RemoteDevice): Unit = {
+        println(remoteDevice.getIdentity.getDescriptorURL + " " + remoteDevice.getDetails().getBaseURL)
+        self ! DeviceAdded(registry, UpnpDevice(remoteDevice))
+      }
 
-    override def remoteDeviceRemoved(registry: Registry, remoteDevice: RemoteDevice): Unit =
-      self ! DeviceRemoved(registry, UpnpDevice(remoteDevice))
+      override def remoteDeviceRemoved(registry: Registry, remoteDevice: RemoteDevice): Unit =
+        self ! DeviceRemoved(registry, UpnpDevice(remoteDevice))
 
-    override def remoteDeviceUpdated(registry: Registry, remoteDevice: RemoteDevice): Unit =
-      self ! DeviceUpdated(registry, UpnpDevice(remoteDevice))
-  })
+      override def remoteDeviceUpdated(registry: Registry, remoteDevice: RemoteDevice): Unit =
+        self ! DeviceUpdated(registry, UpnpDevice(remoteDevice))
+    })
+    service
+  }
 
   def search(): Unit = upnpService.getControlPoint.search(new STAllHeader())
 

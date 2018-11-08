@@ -2,7 +2,7 @@ package org.lolhens.satip.upnp
 
 import java.net.URI
 
-import org.seamless.util.MimeType
+import org.jupnp.util.MimeType
 import scodec.bits.ByteVector
 
 /**
@@ -17,7 +17,7 @@ case class Icon(mimeType: MimeType,
 }
 
 object Icon {
-  def apply(icon: org.fourthline.cling.model.meta.Icon): Icon =
+  def apply(icon: org.jupnp.model.meta.Icon): Icon =
     new Icon(icon.getMimeType, icon.getWidth, icon.getHeight, icon.getDepth, icon.getUri) {
       override def data: ByteVector = Option(icon.getData).map(ByteVector(_)).getOrElse(ByteVector.empty)
     }

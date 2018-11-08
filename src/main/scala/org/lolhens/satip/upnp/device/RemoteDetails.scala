@@ -2,7 +2,7 @@ package org.lolhens.satip.upnp.device
 
 import java.net.{InetAddress, URL}
 
-import org.fourthline.cling.model.meta.RemoteDeviceIdentity
+import org.jupnp.model.meta.RemoteDeviceIdentity
 import scodec.bits.ByteVector
 
 import scala.xml.{Elem, XML}

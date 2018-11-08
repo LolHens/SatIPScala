@@ -20,7 +20,7 @@ object RtspHeaderField2 {
   RtspHeaderField2(ContentBase)("test")
 
   abstract class Factory(name: String) {
-    def parse(value: String): Try[T]
+    def parse(value: String): Try[_]
   }
 
   trait EntityField extends RtspHeaderField2

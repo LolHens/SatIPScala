@@ -11,7 +11,7 @@ case class DeviceType(namespace: String, deviceType: String, version: Int) {
 }
 
 object DeviceType {
-  def apply(deviceType: org.fourthline.cling.model.types.DeviceType): DeviceType =
+  def apply(deviceType: org.jupnp.model.types.DeviceType): DeviceType =
     DeviceType(deviceType.getNamespace, deviceType.getType, deviceType.getVersion)
 
   def parser: Parser[DeviceType] =
