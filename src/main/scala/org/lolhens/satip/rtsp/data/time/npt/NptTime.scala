@@ -8,9 +8,11 @@ abstract class NptTime {
 }
 
 object NptTime {
+
   object Now extends NptTime {
     override def toString: String = "now"
   }
 
   case class NptSec(seconds: Int)
+
 }

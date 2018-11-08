@@ -64,7 +64,7 @@ class RtspSession(val rtspDevice: RtspDevice,
     implicit val byteOrder = ByteOrder.BIG_ENDIAN
     val response = RtspResponse.fromByteString(ByteString.fromArray(bytes, 0, readBytes))
     //val contentLength = response.entity.flatMap(_.entityHeaders.find(_.headerField == RtspHeaderField.ContentLength)).map(_.string.toInt)
-    val contentLength: Option[Int] = response.entity.flatMap(_.entityHeaders.collectFirst{
+    val contentLength: Option[Int] = response.entity.flatMap(_.entityHeaders.collectFirst {
       case field: RtspHeaderField.ContentLength.Value => field.value
     })
     println(contentLength)
@@ -107,7 +107,7 @@ class RtspSession(val rtspDevice: RtspDevice,
 
   def describe() = {
     //rtspSocket = new Socket("192.168.1.6", 554)
-    val request = RtspRequest.describe(Uri(s"rtsp://${rtspDevice.serverAddress}:554/")/*stream=0"*/, List(
+    val request = RtspRequest.describe(Uri(s"rtsp://${rtspDevice.serverAddress}:554/") /*stream=0"*/ , List(
       //RtspHeaderField.Accept("application/sdp")//,
       //RtspHeaderField.Session("0")
     ), RtspEntity(Nil, ""))
@@ -118,8 +118,8 @@ class RtspSession(val rtspDevice: RtspDevice,
 
   def options() = {
     //rtspSocket = new Socket("192.168.1.6", 554)
-    val request = RtspRequest.options(Uri(s"rtsp://${rtspDevice.serverAddress}:554/")/*stream=0"*/, List(
-      RtspHeaderField.Accept("application/sdp")//,
+    val request = RtspRequest.options(Uri(s"rtsp://${rtspDevice.serverAddress}:554/") /*stream=0"*/ , List(
+      RtspHeaderField.Accept("application/sdp") //,
       //RtspHeaderField.Session("0")
     ))
     println(request.request)

@@ -5,6 +5,7 @@ import java.nio.ByteOrder
 import java.util.concurrent.locks.ReentrantLock
 
 import akka.util.ByteStringBuilder
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

@@ -2,8 +2,8 @@ package org.lolhens.satip.rtsp
 
 import org.lolhens.satip.rtsp.RtspHeaderField2.EntityField.ContentBase
 
-import scala.util.{Success, Try}
 import scala.util.matching.Regex
+import scala.util.{Success, Try}
 
 /**
   * Created by pierr on 29.03.2017.
@@ -14,7 +14,6 @@ case class RtspHeaderField2(name: String, value: String) {
 
 object RtspHeaderField2 {
   def apply[F <: Factory](factory: F): F = factory
-
 
 
   RtspHeaderField2(ContentBase)("test")

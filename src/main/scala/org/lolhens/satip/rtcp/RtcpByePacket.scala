@@ -1,7 +1,7 @@
 package org.lolhens.satip.rtcp
 
 import java.nio.ByteOrder
-import org.lolhens.satip.util.RichByteString._
+
 import akka.util.ByteString
 
 /**

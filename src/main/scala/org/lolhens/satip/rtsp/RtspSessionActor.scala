@@ -3,12 +3,7 @@ package org.lolhens.satip.rtsp
 import java.net.InetSocketAddress
 
 import akka.actor.{Actor, ActorRef, ActorRefFactory, Props, Stash}
-import akka.pattern.ask
-import akka.util.Timeout
 import org.lolhens.satip.rtsp.Rtsp._
-import org.lolhens.satip.rtsp.RtspManager._
-import org.lolhens.satip.rtsp.RtspSessionActor.KeepAlive
-import org.lolhens.satip.rtsp.data.RtspVersion
 import org.lolhens.satip.util.ContextScheduler
 
 import scala.concurrent.duration._
@@ -34,7 +29,7 @@ private[rtsp] class RtspSessionActor(tcpConnection: ActorRef, remoteAddress: Ine
   override def receive: Receive = {
     case request: RtspRequest =>
       val listener = sender()
-      outgoingConnection ! Write(request.copy(requestHeaders =  RtspHeaderField.CSeq(0) +: request.requestHeaders)(request.version))
+      outgoingConnection ! Write(request.copy(requestHeaders = RtspHeaderField.CSeq(0) +: request.requestHeaders)(request.version))
 
       context become {
         case Ack =>

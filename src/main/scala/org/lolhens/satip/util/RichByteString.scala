@@ -3,7 +3,8 @@ package org.lolhens.satip.util
 import java.nio.ByteOrder
 
 import akka.util.ByteString
-import RichByteString._
+import org.lolhens.satip.util.RichByteString._
+
 import scala.language.implicitConversions
 
 /**

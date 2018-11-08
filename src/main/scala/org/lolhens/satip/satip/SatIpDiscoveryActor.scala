@@ -89,7 +89,7 @@ class SatIpDiscoveryActor(upnpService: ActorRef) extends Actor {
                     // the Sat>Ip server has no active stream
 
                     case _ =>
-                      //???
+                    //???
                   }
                 }, Duration.Inf)
               }

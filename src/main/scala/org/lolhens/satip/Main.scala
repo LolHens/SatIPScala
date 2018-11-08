@@ -15,7 +15,6 @@ import org.lolhens.satip.rtsp.data.RtspVersion
 import org.lolhens.satip.satip.SatIpDiscoveryActor
 import org.lolhens.satip.upnp.UpnpServiceActor
 import org.lolhens.satip.upnp.UpnpServiceActor.DeviceUpdated
-import org.slf4j.bridge.SLF4JBridgeHandler
 
 import scala.xml.XML
 

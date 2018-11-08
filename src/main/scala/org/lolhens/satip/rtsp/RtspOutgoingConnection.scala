@@ -4,7 +4,6 @@ import akka.actor.{Actor, ActorRef, ActorRefFactory, Props, Stash, Terminated}
 import akka.io.Tcp
 import akka.routing.{BroadcastRoutingLogic, Router}
 import org.lolhens.satip.rtsp.Rtsp._
-import org.lolhens.satip.rtsp.RtspManager._
 import org.lolhens.satip.rtsp.RtspOutgoingConnection.{Register, Unregister}
 
 /**
@@ -71,7 +70,7 @@ object RtspOutgoingConnection {
     Props(new RtspOutgoingConnection(tcpConnection))
 
   private[rtsp] def actor(tcpConnection: ActorRef)
-           (implicit actorRefFactory: ActorRefFactory): ActorRef =
+                         (implicit actorRefFactory: ActorRefFactory): ActorRef =
     actorRefFactory.actorOf(props(tcpConnection), "RTSP-Outgoing-Connection")
 
   case class Register(actorRef: ActorRef) extends Command

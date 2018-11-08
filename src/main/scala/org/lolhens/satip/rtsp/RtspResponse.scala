@@ -21,8 +21,10 @@ object RtspResponse {
       ((!":" ~ AnyChar).rep.! ~ ":" ~ (!newline ~ AnyChar).rep.!.map(_.trim) ~ newline).rep ~ newline ~
       AnyChar.rep.! ~ End).map {
       case (version, statusCode, reason, headerStrings, body) =>
-        val headers = headerStrings.toList.flatMap(header =>
-          {println(RtspHeaderField.valuesMap.get(header._1));RtspHeaderField.valuesMap.get(header._1).map(_.Value.fromString(header._2))}
+        val headers = headerStrings.toList.flatMap(header => {
+          println(RtspHeaderField.valuesMap.get(header._1));
+          RtspHeaderField.valuesMap.get(header._1).map(_.Value.fromString(header._2))
+        }
         )
 
         val responseHeaders = headers.collect {

@@ -3,6 +3,7 @@ package org.lolhens.satip.rtp
 import java.net.{DatagramSocket, InetSocketAddress}
 
 import org.lolhens.satip.rtp.RtpListener.TransmissionMode
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
