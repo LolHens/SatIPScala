@@ -3,7 +3,7 @@ name := "ScalaSatIP"
 lazy val settings = Seq(
   version := "0.0.0",
 
-  scalaVersion := "2.12.7",
+  scalaVersion := "2.12.8",
 
   resolvers ++= Seq(
     "lolhens-maven" at "http://artifactory.lolhens.de/artifactory/maven-public/",
@@ -19,24 +19,24 @@ lazy val settings = Seq(
     "org.typelevel" %% "cats" % "0.9.0",
     "com.chuusai" %% "shapeless" % "2.3.3",
     "io.monix" %% "monix" % "3.0.0-RC2",
-    "com.typesafe.akka" %% "akka-actor" % "2.5.18",
-    "com.typesafe.akka" %% "akka-remote" % "2.5.18",
-    "com.typesafe.akka" %% "akka-stream" % "2.5.18",
+    "com.typesafe.akka" %% "akka-actor" % "2.5.19",
+    "com.typesafe.akka" %% "akka-remote" % "2.5.19",
+    "com.typesafe.akka" %% "akka-stream" % "2.5.19",
     "com.typesafe.akka" %% "akka-http" % "10.1.5",
     "io.circe" %% "circe-core" % "0.10.1",
     "io.circe" %% "circe-generic" % "0.10.1",
     "io.circe" %% "circe-parser" % "0.10.1",
     "com.lihaoyi" %% "fastparse" % "1.0.0",
     "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
-    "org.scodec" %% "scodec-bits" % "1.1.6",
+    "org.scodec" %% "scodec-bits" % "1.1.7",
     "de.lolhens" %% "scalastringutils" % "0.2.0",
-    "org.jupnp" % "org.jupnp" % "2.3.0",
+    "org.jupnp" % "org.jupnp" % "2.5.0",
     "com.comcast" %% "ip4s-core" % "1.1.1",
     "com.comcast" %% "ip4s-cats" % "1.1.1"
   ),
 
-  addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full),
-  addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.8")
+  addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.9"),
+  addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.0-M4")
 
   //mainClass in Compile := Some("")
 )
