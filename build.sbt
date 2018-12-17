@@ -19,7 +19,7 @@ lazy val settings = Seq(
     "org.typelevel" %% "cats" % "0.9.0",
     "com.chuusai" %% "shapeless" % "2.3.3",
     "co.fs2" %% "fs2-core" % "1.0.2",
-    "co.fs2" %% "fs2-io" % "1.1.0",
+    "co.fs2" %% "fs2-io" % "1.0.2",
     "io.monix" %% "monix" % "3.0.0-RC2",
     "com.typesafe.akka" %% "akka-actor" % "2.5.19",
     "com.typesafe.akka" %% "akka-remote" % "2.5.19",
