@@ -18,10 +18,12 @@ case class RtspRequest(method: RtspMethod,
 
   private def body = entity.map(_.body).getOrElse("")
 
-  def request: String =
-    s"$method ${uri.toString} RTSP/$version\r\n${
-      headers.map(e => s"${e.headerField.name}: ${e.value}\r\n").mkString
-    }\r\n$body"
+  def request: String = (
+    List(s"$method ${uri.toString} RTSP/$version") ++
+      headers.map(e => s"${e.headerField.name}: ${e.value}") ++
+      List("", body)
+    )
+    .mkString("\r\n")
 
   def toByteString: ByteString =
     ByteString.fromString(request, StandardCharsets.UTF_8.name())

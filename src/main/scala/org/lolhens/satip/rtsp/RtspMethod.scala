@@ -6,8 +6,8 @@ package org.lolhens.satip.rtsp
 case class RtspMethod(name: String) {
   override def toString: String = name
 
-  lazy val supportedHeaderFields: List[RtspHeaderField] =
-    RtspHeaderField.values.filter(_.supportedMethods.contains(this))
+  /*lazy val supportedHeaderFields: List[RtspHeaderField] =
+    RtspHeaderField.values.filter(_.supportedMethods.contains(this))*/
 }
 
 object RtspMethod {
