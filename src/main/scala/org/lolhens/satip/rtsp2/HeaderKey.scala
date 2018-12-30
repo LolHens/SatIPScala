@@ -2,6 +2,7 @@ package org.lolhens.satip.rtsp2
 
 case class HeaderKey(name: String) {
   def apply(value: String): Header = Header(this, value)
+  def list(values: String*): Header = this.apply(values.mkString(";"))
 }
 
 object HeaderKey {
