@@ -17,9 +17,10 @@ object RtspClient {
 
   implicit val rtspVersion = RtspVersion(1, 0)
 
-  val request2 = Request.options(Uri.unsafeFromString(s"rtsp://10.1.15.237/") /*stream=0"*/ , Headers(
+  val request2 = Request.setup(Uri.unsafeFromString(s"rtsp://10.1.15.237/") /*stream=0"*/ , Headers(
     HeaderKey.CSeq(1.toString),
-    HeaderKey.Accept("application/sdp") //,
+    HeaderKey.Accept("application/sdp"),
+    HeaderKey.Transport("RTP/AVP;unicast;client_port=8000-8001")
     //RtspHeaderField.Session("0")
   ))
 
