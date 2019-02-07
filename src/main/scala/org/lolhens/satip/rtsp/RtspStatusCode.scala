@@ -7,7 +7,7 @@ import org.lolhens.satip.util.ParserUtils._
   * Created by pierr on 23.10.2016.
   */
 case class RtspStatusCode(name: String, code: Int) {
-  override def toString: String = s"${getClass.getSimpleName.split('$').head}($code)"
+  override def toString: String = s"${getClass.getName.stripSuffix("$").split("\\.|\\$").last}($code)"
 }
 
 object RtspStatusCode {

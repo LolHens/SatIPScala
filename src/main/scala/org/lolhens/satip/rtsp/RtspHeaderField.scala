@@ -32,7 +32,7 @@ abstract case class RtspHeaderField(name: String)
 
   def apply(value: T): Value = Value(value)
 
-  override def productPrefix: String = getClass.getSimpleName.split('$').head
+  override def productPrefix: String = getClass.getName.stripSuffix("$").split("\\.|\\$").last
 }
 
 object RtspHeaderField {
