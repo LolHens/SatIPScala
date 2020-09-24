@@ -4,7 +4,7 @@ import java.net.InetSocketAddress
 import java.nio.channels.AsynchronousChannelGroup
 import java.util.concurrent.Executors
 
-import cats.effect.Resource
+import cats.effect.{Blocker, Resource}
 import fs2.Chunk
 import fs2.io.tcp
 import monix.eval.Task
@@ -19,16 +19,18 @@ case class Connection(address: InetSocketAddress) {
            cSeq: Long = nextCSeq.getAndIncrement()): Task[String] = {
     val newRequest = request.withHeaders(request.headers.put(HeaderKey.CSeq(cSeq.toString)))
 
-    asyncChannelGroupResource.use { implicit asyncChannelGroup =>
-      tcp.Socket.client[Task](address).use { socket =>
-        val readAll = socket.reads(4096).chunks.map(byteVectorFromChunk).fold(ByteVector.empty)(_ ++ _).compile.toList.map(_.head)
+    Blocker[Task].use { blocker =>
+      tcp.SocketGroup[Task](blocker).use { socketGroup =>
+        socketGroup.client[Task](address).use { socket =>
+          val readAll = socket.reads(4096).chunks.map(byteVectorFromChunk).fold(ByteVector.empty)(_ ++ _).compile.toList.map(_.head)
 
-        for {
-          _ <- socket.write(Chunk.byteVector(newRequest.binaryPayload))
-          bytes <- socket.read(1024 * 1024).map(_.map(byteVectorFromChunk).getOrElse(ByteVector.empty))//readAll
-          string = bytes.decodeUtf8.right.get
-        } yield
-          string
+          for {
+            _ <- socket.write(Chunk.byteVector(newRequest.binaryPayload))
+            bytes <- socket.read(1024 * 1024).map(_.map(byteVectorFromChunk).getOrElse(ByteVector.empty)) //readAll
+            string = bytes.decodeUtf8.toTry.get
+          } yield
+            string
+        }
       }
     }
   }

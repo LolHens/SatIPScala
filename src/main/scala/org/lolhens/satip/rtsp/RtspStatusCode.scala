@@ -1,6 +1,6 @@
 package org.lolhens.satip.rtsp
 
-import fastparse.all._
+import fastparse._
 import org.lolhens.satip.util.ParserUtils._
 
 /**
@@ -149,5 +149,5 @@ object RtspStatusCode {
 
   lazy val valuesMap: Map[Int, RtspStatusCode] = values.map(e => (e.code, e)).toMap
 
-  val parser: Parser[RtspStatusCode] = digits.!.map((Integer.parseInt(_: String)) andThen (RtspStatusCode.valuesMap(_)))
+  def parser[_: P]: P[RtspStatusCode] = digits.!.map((Integer.parseInt(_: String)) andThen (RtspStatusCode.valuesMap(_)))
 }

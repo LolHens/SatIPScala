@@ -143,5 +143,5 @@ object StatusCode {
 
   lazy val valuesMap: Map[Int, StatusCode] = values.map(e => (e.code, e)).toMap
 
-  //val parser: Parser[StatusCode] = digits.!.map((Integer.parseInt(_: String)) andThen (StatusCode.valuesMap(_)))
+  //def parser[_: P]: P[StatusCode] = digits.!.map((Integer.parseInt(_: String)) andThen (StatusCode.valuesMap(_)))
 }

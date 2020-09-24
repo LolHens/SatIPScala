@@ -1,10 +1,10 @@
 package org.lolhens.satip.rtsp.data.time.smpte
 
-import de.lolhens.stringutils.StringUtils._
+import org.lolhens.satip.util.StringUtils._
 
 /**
-  * Created by pierr on 15.11.2016.
-  */
+ * Created by pierr on 15.11.2016.
+ */
 case class SmpteTime(hours: Int,
                      minutes: Int,
                      seconds: Int,

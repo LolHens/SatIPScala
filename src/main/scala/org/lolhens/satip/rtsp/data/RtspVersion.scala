@@ -1,18 +1,19 @@
 package org.lolhens.satip.rtsp.data
 
-import fastparse.all._
+import fastparse.NoWhitespace._
+import fastparse._
 import org.lolhens.satip.util.ParserUtils._
 
 /**
-  * Created by pierr on 13.11.2016.
-  */
+ * Created by pierr on 13.11.2016.
+ */
 case class RtspVersion(majorVersion: Int,
                        minorVersion: Int) {
   override def toString: String = s"$majorVersion.$minorVersion"
 }
 
 object RtspVersion {
-  val parser: Parser[RtspVersion] = (digits.!.map(Integer.parseInt) ~ "." ~ digits.!.map(Integer.parseInt)).map {
+  def parser[_: P]: P[RtspVersion] = (digits.!.map(Integer.parseInt) ~ "." ~ digits.!.map(Integer.parseInt)).map {
     case (majorVersion, minorVersion) =>
       RtspVersion(majorVersion, minorVersion)
   }

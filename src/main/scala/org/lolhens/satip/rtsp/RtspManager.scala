@@ -22,7 +22,7 @@ private[rtsp] class RtspManager extends Actor with Stash {
 
           val connection = RtspSessionActor.actor(tcpConnection, remoteAddress)
 
-          listener tell(Connected(remoteAddress, localAddress), connection)
+          listener.tell(Connected(remoteAddress, localAddress), connection)
 
           unstashAll()
           context.unbecome()

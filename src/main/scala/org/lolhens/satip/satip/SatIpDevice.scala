@@ -1,7 +1,8 @@
 package org.lolhens.satip.satip
 
 import akka.http.scaladsl.model.Uri
-import fastparse.all._
+import fastparse.NoWhitespace._
+import fastparse._
 import org.jupnp.model.meta.RemoteDevice
 import org.lolhens.satip.rtsp._
 import org.lolhens.satip.rtsp.data.RtspVersion
@@ -23,8 +24,8 @@ class SatIpDevice(val baseUrl: String,
                   val hasCableBroadcastSupport: Boolean,
                   val hasTerrestrialBroadcastSupport: Boolean
                   /*,upnpDevice: UpnpDevice = null*/) {
-  val responseBodyParser: Parser[Option[String]] =
-    ("s=SatIPServer:1" ~ s1 ~ (!space ~ AnyChar).rep(min = 1).! ~ s1).?
+  def responseBodyParser[_: P]: P[Option[String]] =
+    ("s=SatIPServer:1" ~ s1 ~ (!space ~ AnyChar).rep(1).! ~ s1).?
 
   checkCapabilities(Nil)
 
@@ -50,7 +51,7 @@ class SatIpDevice(val baseUrl: String,
               case RtspStatusCode.Ok =>
                 val frontEndInfo =
                   response.entity.map(_.body)
-                    .flatMap(body => responseBodyParser.parse(body).tried.toOption.flatten)
+                    .flatMap(body => parse(body, responseBodyParser(_)).tried.toOption.flatten)
                 frontEndInfo.map {
                   frontEndInfo =>
                     val frontEndCounts = frontEndInfo.split(",")

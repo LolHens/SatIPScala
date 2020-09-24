@@ -154,17 +154,18 @@ object RtspSession {
     println(session.describe())
   }
 
-  import fastparse.all._
+  import fastparse.NoWhitespace._
+  import fastparse._
   import org.lolhens.satip.util.ParserUtils._
 
   val defaultRtspSessionTTL = 30 // seconds
 
-  val rtspSessionHeaderParser: Parser[(String, Int)] =
-    P(s ~ (!(space | ";")).rep(min = 1).! ~ (";timeout=" ~ digits.!.map(_.toInt)).?).map {
+  def rtspSessionHeaderParser[_: P]: P[(String, Int)] =
+    P(s ~ (!(space | ";")).rep(1).! ~ (";timeout=" ~ digits.!.map(_.toInt)).?).map {
       case (rtspSessionId, rtspSessionTTL) => (rtspSessionId, rtspSessionTTL.getOrElse(defaultRtspSessionTTL))
     }
 
-  val describeResponseSignalInfo: Parser[(Boolean, Double, Double)] =
+  def describeResponseSignalInfo[_: P]: P[(Boolean, Double, Double)] =
     P(";tuner=" ~ digits ~ "," ~ digits.!.map(_.toInt) ~ "," ~ digits.!.map(_.toInt) ~ "," ~ digits.!.map(_.toInt) ~ ",").map {
       case (level, signalLocked, quality) =>
         (signalLocked == 1, level.toDouble * 100 / 255, quality.toDouble * 100 / 255)

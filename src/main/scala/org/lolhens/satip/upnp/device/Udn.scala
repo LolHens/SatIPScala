@@ -2,12 +2,13 @@ package org.lolhens.satip.upnp.device
 
 import java.util.UUID
 
-import fastparse.all._
+import fastparse.NoWhitespace._
+import fastparse._
 import org.jupnp.model.types.UDN
 
 /**
-  * Created by u016595 on 21.03.2017.
-  */
+ * Created by u016595 on 21.03.2017.
+ */
 case class Udn(identifier: String) {
   override def toString: String = s"uuid:$identifier"
 }
@@ -17,5 +18,5 @@ object Udn {
 
   def random: Udn = Udn(UUID.randomUUID().toString)
 
-  def parser: Parser[Udn] = ("uuid:" ~ AnyChar.rep.!).map(Udn(_))
+  def parser[_: P]: P[Udn] = ("uuid:" ~ AnyChar.rep.!).map(Udn(_))
 }

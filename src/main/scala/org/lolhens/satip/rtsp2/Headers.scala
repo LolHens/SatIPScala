@@ -1,16 +1,15 @@
 package org.lolhens.satip.rtsp2
 
-import scala.collection.generic.CanBuildFrom
-import scala.collection.{immutable, mutable}
+import scala.collection.immutable
 
 case class Headers private(headers: List[Header])
   extends immutable.Iterable[Header]
-    with collection.IterableLike[Header, Headers] {
+    /*with collection.IterableLike[Header, Headers]*/ {
   override def toList: List[Header] = headers
 
   override def isEmpty: Boolean = headers.isEmpty
 
-  override protected def newBuilder: mutable.Builder[Header, Headers] = Headers.newBuilder
+  //override protected def newBuilder: mutable.Builder[Header, Headers] = Headers.newBuilder
 
   override def drop(n: Int): Headers = if (n == 0) this else new Headers(headers.drop(n))
 
@@ -25,8 +24,10 @@ case class Headers private(headers: List[Header])
   def put(header: Header): Headers = {
     val (pre, post) = headers.span(_.headerKey != header.headerKey)
 
-    if (post.isEmpty) pre :+ header
-    else pre ++ (header +: post.tail)
+    Headers(
+      if (post.isEmpty) pre :+ header
+      else pre ++ (header +: post.tail)
+    )
   }
 
   def ++(headers: immutable.Iterable[Header]): Headers =
@@ -42,7 +43,7 @@ object Headers {
   /** Create a new Headers collection from the headers */
   def apply(headers: List[Header]): Headers = new Headers(headers)
 
-  implicit val canBuildFrom: CanBuildFrom[Traversable[Header], Header, Headers] =
+  /*implicit val canBuildFrom: CanBuildFrom[Traversable[Header], Header, Headers] =
     new CanBuildFrom[TraversableOnce[Header], Header, Headers] {
       def apply(from: TraversableOnce[Header]): mutable.Builder[Header, Headers] = newBuilder
 
@@ -50,7 +51,5 @@ object Headers {
     }
 
   private def newBuilder: mutable.Builder[Header, Headers] =
-    new mutable.ListBuffer[Header].mapResult(b => new Headers(b))
-
-
+    new mutable.ListBuffer[Header].mapResult(b => new Headers(b))*/
 }
